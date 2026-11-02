@@ -1,0 +1,3 @@
+# Parts libraries this catalogue uses, beside this repository (CI clones them there).
+../vequir-power/library
+../vequir-standard/library
