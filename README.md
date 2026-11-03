@@ -18,6 +18,11 @@ Product page: **[anroleroux.co.za/vequir-unit](https://anroleroux.co.za/vequir-u
   - its own part, the **lid** (`PB6/lid`), sized from the base.
 
   `PB6/assembly.py` seats the lid on the chassis, and the build checks the fit.
+- **PICO2W**, the Raspberry Pi Pico 2 W, as the shop sells it: one part,
+  the **board** (`PICO2W/board`), 51 × 21 mm on a 1 mm board, with its 40
+  edge pins (through-holes and castellations), four mounting holes, three
+  SWD debug pads, the micro-USB port, the RP2350, its flash, the BOOTSEL
+  button and the wireless module's shield can.
 
 ## The breakdown
 
