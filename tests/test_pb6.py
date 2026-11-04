@@ -12,9 +12,9 @@ from pathlib import Path
 
 import pytest
 
-from neobotics.catalog import discover, find
-from neobotics.cli import main as cli_main
-from neobotics.part import build_part
+from cad.catalog import discover, find
+from cad.cli import main as cli_main
+from cad.part import build_part
 
 PRODUCTS = Path(__file__).resolve().parents[1] / "products"
 CHASSIS = PRODUCTS / "PB6" / "chassis"
@@ -27,7 +27,7 @@ def _summary(result):
 
 @pytest.fixture(autouse=True)
 def _at_the_repository_root(monkeypatch):
-    """``neobotics build`` takes designations relative to ``products/``."""
+    """``cad build`` takes designations relative to ``products/``."""
     monkeypatch.chdir(PRODUCTS.parent)
 
 
