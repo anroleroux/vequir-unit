@@ -12,9 +12,9 @@ from pathlib import Path
 
 import pytest
 
-from neobotics.catalog import discover, find
-from neobotics.cli import main as cli_main
-from neobotics.part import build_part
+from cad.catalog import discover, find
+from cad.cli import main as cli_main
+from cad.part import build_part
 
 PRODUCTS = Path(__file__).resolve().parents[1] / "products"
 CHASSIS = PRODUCTS / "PB6" / "chassis"
@@ -27,14 +27,14 @@ def _summary(result):
 
 @pytest.fixture(autouse=True)
 def _at_the_repository_root(monkeypatch):
-    """``neobotics build`` takes designations relative to ``products/``."""
+    """``cad build`` takes designations relative to ``products/``."""
     monkeypatch.chdir(PRODUCTS.parent)
 
 
 def test_discover_walks_the_real_catalogue():
     designations = [e.designation for e in discover(PRODUCTS)]
     assert designations == ["PB6/chassis", "PB6/chassis/base", "PB6/chassis/cn3302_charger", "PB6/chassis/ip6505_charger",
-                            "PB6", "PB6/lid"]
+                            "PB6", "PB6/lid", "PICO2W/board"]
 
 
 def test_find_by_designation():
@@ -148,3 +148,12 @@ def test_build_command_takes_an_assembly_designation(tmp_path, capsys):
     assert cli_main(["build", "PB6/chassis", "--out", str(tmp_path)]) == 0
     assert (tmp_path / "PB6/chassis/_assembly/cad/part.step").exists()
     assert "built PB6/chassis" in capsys.readouterr().out
+
+
+def test_the_pico_2_w_has_its_pins_and_mounting_holes(tmp_path):
+    """51 x 21 mm on a 1 mm board, the micro-USB 1.3 mm proud of its end; 40
+    pin holes, 40 castellations, 4 mounting holes and 3 debug pads."""
+    summary = _summary(build_part(PRODUCTS / "PICO2W/board/part.py", tmp_path / "out"))
+    assert summary["bounding_box"]["size"] == pytest.approx([52.3, 21.0, 3.6])
+    assert summary["face_types"]["CYLINDER"] == 40 + 40 + 4 + 3
+    assert summary["regions"]["mounting_holes"]["count"] == 4

@@ -1,7 +1,7 @@
 # vequir-unit
 
-VequIR's own units, as a [neoBotics](https://github.com/anroleroux/neoBotics)
-product catalogue: each product broken down into assemblies and parts,
+VequIR's own units, as a product catalogue for the
+[CAD tool](https://github.com/anroleroux/vequir-standard/tree/main/tools/cad): each product broken down into assemblies and parts,
 written as CadQuery B-rep code from plain-language descriptions, built and
 checked as exact solids, and assembled with its fit checked.
 
@@ -18,6 +18,11 @@ Product page: **[anroleroux.co.za/vequir-unit](https://anroleroux.co.za/vequir-u
   - its own part, the **lid** (`PB6/lid`), sized from the base.
 
   `PB6/assembly.py` seats the lid on the chassis, and the build checks the fit.
+- **PICO2W**, the Raspberry Pi Pico 2 W, as the shop sells it: one part,
+  the **board** (`PICO2W/board`), 51 × 21 mm on a 1 mm board, with its 40
+  edge pins (through-holes and castellations), four mounting holes, three
+  SWD debug pads, the micro-USB port, the RP2350, its flash, the BOOTSEL
+  button and the wireless module's shield can.
 
 ## The breakdown
 
@@ -50,33 +55,32 @@ script's docstring.
 
 ## Working on it
 
-Clone neoBotics (the tool) and the libraries `libraries.txt` names beside
-this repository, install neobotics, and run everything from this
-repository's root:
+Clone the libraries `libraries.txt` names beside this repository, install
+the CAD tool (it comes with vequir-standard, under `tools/cad/`),
+and run everything from this repository's root:
 
 ```bash
-git clone https://github.com/anroleroux/neoBotics ../neoBotics
 git clone https://github.com/anroleroux/vequir-power ../vequir-power
 git clone https://github.com/anroleroux/vequir-standard ../vequir-standard
 python -m venv .venv && source .venv/bin/activate
-pip install -e "../neoBotics[dev]"
+pip install -e "../vequir-standard/tools/cad[dev]"
 
 python -m pytest -q tests                     # checks of the real parts
-neobotics build PB6/chassis/base                      # one part
-neobotics build PB6                                   # an assembled model
-neobotics site --out results --site site      # every part, then the pages
+cad build PB6/chassis/base                      # one part
+cad build PB6                                   # an assembled model
+cad site --out results --site site      # every part, then the pages
 ```
 
 `results/` and `site/` are build output and git-ignored. In a Claude Code
-session, the `neobotics-part` skill (`.claude/skills/neobotics-part/`) takes
+session, the `cad-part` skill (`.claude/skills/cad-part/`) takes
 a designation plus modelling instructions through the same steps.
 
 ## CI and the product page
 
 `.github/workflows/cad.yml` runs on every push to `main` and `claude/**`. It
-clones neoBotics and the libraries this repository uses beside the checkout
+clones the libraries this repository uses beside the checkout
 (the branch of the same name when it exists there, else the default branch),
-runs the tests, builds every part, and deploys the site to GitHub Pages:
+installs the CAD tool from vequir-standard's clone, runs the tests, builds every part, and deploys the site to GitHub Pages:
 **anroleroux.co.za/vequir-unit**, the product page. A part that fails to
 build fails the job.
 Settings → Pages → Source must be GitHub Actions.

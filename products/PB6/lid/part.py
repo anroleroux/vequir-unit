@@ -65,5 +65,5 @@ regions = {
         lambda f: f.normalAt().z < -0.999 and abs(f.Center().z - (seat_height - lip_depth)) < 1e-6),
 }
 
-if "show_object" in globals():  # CQ-editor (load_part runs under neobotics only)
+if "show_object" in globals():  # CQ-editor (load_part runs under the CAD tool only)
     show_object(result, name="part")
