@@ -9,3 +9,8 @@ the board can be soldered flat. Four 2.1 mm mounting holes sit 47 mm apart
 along the board and 11.4 mm apart across it. Three SWD debug pads and the
 wireless module under its metal shield sit towards the far end, with the
 antenna at the very end.
+
+The model follows a photograph of the top of the board. It shows the
+chips, the button and the USB port as their own blocks, the small
+components as a few larger approximate blocks, and a block over the pins
+and the debug pads, so a housing knows where to stay clear.

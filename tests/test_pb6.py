@@ -157,3 +157,5 @@ def test_the_pico_2_w_has_its_pins_and_mounting_holes(tmp_path):
     assert summary["bounding_box"]["size"] == pytest.approx([52.3, 21.0, 3.6])
     assert summary["face_types"]["CYLINDER"] == 40 + 40 + 4 + 3
     assert summary["regions"]["mounting_holes"]["count"] == 4
+    assert summary["regions"]["pin_strips"]["count"] == 2
+    assert summary["regions"]["debug_pads"]["count"] == 1
