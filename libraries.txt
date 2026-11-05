@@ -1,3 +1,4 @@
-# Parts libraries this catalogue uses, beside this repository (CI clones them there).
-../vequir-power/library
-../vequir-standard/library
+# Parts libraries this catalogue uses, beside this repository (CI clones them there),
+# each followed by the site that publishes it (for links to its pages).
+../vequir-power/library https://anroleroux.co.za/vequir-power/
+../vequir-standard/library https://anroleroux.co.za/vequir-standard/

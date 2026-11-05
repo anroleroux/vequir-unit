@@ -24,7 +24,7 @@ Assumptions where the description is silent:
 """
 import cadquery as cq
 
-box = load_part("../chassis/base")  # the box this lid fits: l, b, h, wall
+box = load_part("../base")  # the box this lid fits: l, b, h, wall
 
 # parameters, in mm
 t = box.wall  # lid thickness: plate and skirts

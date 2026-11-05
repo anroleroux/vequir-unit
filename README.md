@@ -10,19 +10,16 @@ Product page: **[anroleroux.co.za/vequir-unit](https://anroleroux.co.za/vequir-u
 ## Products
 
 - **PB6**, a powerbank: a six-cell 18650 pack in an enclosure, charged over
-  USB-C and charging devices from two USB-A ports.
-  - the assembly **Chassis** (`PB6/chassis`): a base driven by `l`, `b`,
-    `h` and `wall`, its CN3302 and IP6505 charger boards, and the six-cell
-    pack from vequir-power (`battery_holders/pack_3x2`), screwed to four
-    pillars with M1.2 screws from vequir-standard;
-  - its own part, the **lid** (`PB6/lid`), sized from the base.
+  USB-C and charging devices from two USB-A ports. This repository holds
+  only the enclosure's own parts:
+  - the **base** (`PB6/base`), driven by `l`, `b`, `h` and `wall`;
+  - the **lid** (`PB6/lid`), sized from the base.
 
-  `PB6/assembly.py` seats the lid on the chassis, and the build checks the fit.
-- **PICO2W**, the Raspberry Pi Pico 2 W, as the shop sells it: one part,
-  the **board** (`PICO2W/board`), 51 × 21 mm on a 1 mm board, with its 40
-  edge pins (through-holes and castellations), four mounting holes, three
-  SWD debug pads, the micro-USB port, the RP2350, its flash, the BOOTSEL
-  button and the wireless module's shield can.
+  `PB6/assembly.py`, the one assembly, places them with the six-cell pack
+  from vequir-power (`battery_holders/pack_3x2`), screwed to the base's four
+  pillars, and the bought-in CN3302 and IP6505 charger boards and M1.2
+  screws from vequir-standard (`power/…`, `hardware/…`), and the build checks
+  the fit.
 
 ## The breakdown
 
@@ -47,8 +44,8 @@ products/<PRODUCT>/<assembly>/.../<part>/part.py            the CadQuery script 
   library item. The libraries are vequir-power's and vequir-standard's, which
   `libraries.txt` names; this repository has no library of its own.
 
-A part's **designation** is its path, for example `PB6/chassis/base`; an
-assembly's is its path too (`PB6/chassis`). Product directories keep their
+A part's **designation** is its path, for example `PB6/base`; an
+assembly's is its path too (`PB6`). Product directories keep their
 code (`PB6`); assembly and part slugs are lowercase with underscores.
 Titles come from `product.md`, `assembly.md` and the first line of a part
 script's docstring.
@@ -66,7 +63,7 @@ python -m venv .venv && source .venv/bin/activate
 pip install -e "../vequir-standard/tools/cad[dev]"
 
 python -m pytest -q tests                     # checks of the real parts
-cad build PB6/chassis/base                      # one part
+cad build PB6/base                              # one part
 cad build PB6                                   # an assembled model
 cad site --out results --site site      # every part, then the pages
 ```

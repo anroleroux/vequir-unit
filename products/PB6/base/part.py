@@ -1,4 +1,4 @@
-"""Chassis base box.
+"""PB6 base box.
 
 An open-top rectangular box with its side walls at +-y removed: a floor and
 the two end walls at +-x, all one wall thickness, open at the top and along
@@ -32,13 +32,13 @@ Assumptions where the description is silent:
   the USB-A plug's 12 x 4.5 mm metal shell with 0.5 mm clearance all round
   (13 x 5.5 mm), square-cornered, centred on its port, so the plug's moulded
   body stays outside; the board's size and port height come from
-  ip6505_charger through load_part;
+  power/ip6505_charger through load_library;
 - the CN3302 charger board sits on the floor beside the first IP6505, on the
   +y side with a 3 mm gap between the boards, its USB-C port's mouth against the inside of
   the front wall too; its plug hole is the USB-C plug's 8.25 x 2.4 mm shell
   with 0.5 mm clearance all round (9.25 x 3.4 mm), with fully rounded ends
   like the plug, centred on the port; the board's size and port height come
-  from cn3302_charger through load_part;
+  from power/cn3302_charger through load_library;
 - the pillars stand on the floor and reach the tabs' undersides (15 mm),
   so each tab rests on its pillar; each pillar's top is the tab's
   footprint, from the holders' end face out to the tab's tip (4.9 x 10 mm);
@@ -50,8 +50,8 @@ Assumptions where the description is silent:
 import cadquery as cq
 
 pack = load_library("battery_holders/pack_3x2")  # the six-cell pack: its size
-ip6505 = load_part("../ip6505_charger")  # the USB-A output board behind the front wall
-cn3302 = load_part("../cn3302_charger")  # the USB-C battery charger beside it
+ip6505 = load_library("power/ip6505_charger")  # the USB-A output board behind the front wall
+cn3302 = load_library("power/cn3302_charger")  # the USB-C battery charger beside it
 
 # the driving variables, in mm
 l = 130.0  # length, outside, along x
