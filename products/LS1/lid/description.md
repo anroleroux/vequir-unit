@@ -7,4 +7,5 @@ walls; there are no lips along the sides (+-y).
 
 An 8 x 1 RGB WS2812 stick sits against the inside of the lid's +y side,
 along it, with its LEDs facing out, each LED seated in its own square window
-through the side.
+through the side. It is screwed to two little pillars on the inside of the
+side with M1.2 countersunk screws.
