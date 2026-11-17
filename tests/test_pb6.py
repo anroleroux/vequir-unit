@@ -35,7 +35,7 @@ def _at_the_repository_root(monkeypatch):
 
 def test_discover_walks_the_real_catalogue():
     designations = [e.designation for e in discover(PRODUCTS)]
-    assert designations == ["PB6", "PB6/base", "PB6/lid"]
+    assert designations == ["LS1", "LS1/base", "LS1/lid", "PB6", "PB6/base", "PB6/lid"]
 
 
 def test_find_by_designation():
