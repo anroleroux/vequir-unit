@@ -73,13 +73,13 @@ def test_the_ls1_schematic_names_only_real_pins_and_its_modelled_parts():
 
 
 def test_the_wiring_board_holds_its_seven_parts_clear_of_each_other(tmp_path):
-    """Three diodes, three resistors and the transistor, every lead through
-    its hole: nothing overlaps."""
+    """Three diodes, six resistors, the capacitor and the transistor, every
+    lead through its hole: nothing overlaps."""
     summary = _summary(build_part(LS1 / "wiring_board" / "assembly.py", tmp_path / "wb"))
     assert summary["interference"] == []
     names = sorted(c["name"].split("/")[-1] for c in summary["components"])
-    assert names == ["D1", "D2", "D3", "Q1", "R1", "R2", "R3", "board"]
+    assert names == ["C1", "D1", "D2", "D3", "Q1", "R1", "R2", "R3", "R4", "R5", "R6", "board"]
     board = _summary(build_part(LS1 / "wiring_board" / "board" / "part.py", tmp_path / "b"))
-    assert board["bounding_box"]["size"] == pytest.approx([35.56, 25.4, 1.6])
+    assert board["bounding_box"]["size"] == pytest.approx([35.56, 35.56, 1.6])
     assert board["regions"]["mount_holes"]["count"] == 4
     assert board["regions"]["diode_holes"]["count"] == 6

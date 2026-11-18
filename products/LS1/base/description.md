@@ -16,7 +16,9 @@ Behind the Pico, the MT3608 boost converter is also mounted on its side, held
 by pillars.
 
 In front of the holder, a small perfboard (the wiring board) holds the
-three 1N5822 diodes, the three resistors and the buzzer's transistor; it is
+three 1N5822 diodes, the resistors (among them the battery voltage divider
+and the LED stick's data resistor), a capacitor and the buzzer's
+transistor; it is
 screwed with M1.2 countersunk screws to pillars rising from the floor. The
 box is made longer to fit it.
 
