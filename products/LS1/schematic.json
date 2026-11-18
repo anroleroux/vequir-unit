@@ -1,531 +1,91 @@
 {
  "title": "Wiring",
- "note": "One USB-C port for charging and data: VBUS charges the cell through the TP4056 and runs the unit through the load-sharing switch; D+ and D- go to the Pico's USB test pads. The MT3608 makes about 5.2 V from the cell, and a 1N5822 joins it to the Pico's VSYS, so it can never push power back into a computer. Dashed parts are wired in on their leads and are not in the 3D model.",
+ "note": "One USB-C port for charging and data: VBUS charges the cell through the TP4056, and D+ and D- go to the Pico's USB test pads. Two 1N5822 diodes share the load: the MT3608 runs from whichever of VBUS and the cell is higher, so with USB in the cell only charges. A third 1N5822 joins the MT3608 (set to about 5.2 V) to the Pico's VSYS, so nothing can push power back into a computer. D1 to D3, the resistors and Q1 sit on the wiring board.",
  "groups": [
-  {
-   "label": "Load sharing: USB runs the unit while the cell charges",
-   "x": -8,
-   "y": 21,
-   "w": 56,
-   "h": 23,
-   "note": "With USB in, Q2's gate is at 5 V and it is off: the MT3608 runs from VBUS through D2, and the TP4056 sees only the cell, so it ends the charge properly. With USB out, R4 pulls the gate low and Q2 connects the cell."
-  }
+  {"label": "Load sharing (diode OR)", "x": 22, "y": 20, "w": 18, "h": 18,
+   "note": "With USB in, VBUS through D2 (about 4.6 V) is above the cell through D3 (at most about 3.85 V), so D3 is off and the cell only charges; the TP4056 then ends the charge properly. With USB out, the cell runs the MT3608 through D3."}
  ],
  "components": [
-  {
-   "ref": "J1",
-   "name": "USB-C breakout",
-   "item": "electronics/usb_c_breakout",
-   "x": 0,
-   "y": 0,
-   "pins": {
-    "right": [
-     "VBUS",
-     "GND",
-     "D+",
-     "D-",
-     "CC1",
-     "CC2"
-    ]
-   },
-   "note": "The only USB port on the unit. CC1 and CC2 each have a 5.1 k resistor to GND on the board, so a USB-C charger supplies 5 V; SBU1 and SBU2 are not used."
-  },
-  {
-   "ref": "U2",
-   "name": "TP4056",
-   "item": "power/tp4056_charger",
-   "x": 40,
-   "y": 0,
-   "pins": {
-    "left": [
-     "IN+",
-     "IN-"
-    ],
-    "right": [
-     "B+",
-     "B-",
-     "OUT+",
-     "OUT-"
-    ]
-   },
-   "note": "1 A single-cell charger with protection (DW01 + 8205A). Its own USB-C port is not used: power comes in on IN+ and IN-. IN- and OUT- are joined on the board."
-  },
-  {
-   "ref": "BT1",
-   "name": "18650",
-   "item": "battery_holders/single_18650_holder",
-   "x": 66,
-   "y": 0,
-   "w": 12,
-   "symbol": "cell",
-   "pins": {
-    "left": [
-     "+"
-    ],
-    "right": [
-     "-"
-    ]
-   },
-   "note": "One 18650 cell in its holder, glued to the floor."
-  },
-  {
-   "ref": "U3",
-   "name": "1S BMS",
-   "item": "power/bms_1s_3a",
-   "x": 66,
-   "y": 10,
-   "pins": {
-    "left": [
-     "B+",
-     "B-"
-    ],
-    "right": [
-     "P-"
-    ]
-   },
-   "note": "Mantech 210454 protection strip, on the cell. A second layer of protection in series with the TP4056's own; it can be left out."
-  },
-  {
-   "ref": "Q2",
-   "name": "AO3401 P-FET",
-   "x": 8,
-   "y": 24,
-   "symbol": "pmos",
-   "modelled": false,
-   "pins": {
-    "left": [
-     "D"
-    ],
-    "right": [
-     "S"
-    ],
-    "bottom": [
-     "G"
-    ]
-   },
-   "note": "Any small P-channel MOSFET with a gate threshold under about 1.5 V (AO3401, SOT-23)."
-  },
-  {
-   "ref": "R4",
-   "name": "22k",
-   "x": 0,
-   "y": 36,
-   "w": 10,
-   "symbol": "resistor",
-   "modelled": false,
-   "pins": {
-    "left": [
-     "1"
-    ],
-    "right": [
-     "2"
-    ]
-   },
-   "note": "Holds Q2's gate low with USB out. 22 k rather than 100 k, so the Schottky's leakage cannot lift the gate."
-  },
-  {
-   "ref": "D2",
-   "name": "1N5822",
-   "x": 28,
-   "y": 36,
-   "w": 10,
-   "symbol": "diode",
-   "modelled": false,
-   "pins": {
-    "left": [
-     "A"
-    ],
-    "right": [
-     "K"
-    ]
-   },
-   "note": "Feeds the MT3608 from VBUS while USB is in. Same 1N5822 as D1, on its leads."
-  },
-  {
-   "ref": "U4",
-   "name": "MT3608",
-   "item": "power/mt3608_boost",
-   "x": 62,
-   "y": 24,
-   "pins": {
-    "left": [
-     "VIN+",
-     "VIN-"
-    ],
-    "right": [
-     "VOUT+",
-     "VOUT-"
-    ]
-   },
-   "note": "Boost converter: set its trimmer for about 5.2 V out before connecting the Pico."
-  },
-  {
-   "ref": "D1",
-   "name": "1N5822",
-   "item": "electronics/diode_1n5822",
-   "x": 88,
-   "y": 24,
-   "w": 10,
-   "symbol": "diode",
-   "pins": {
-    "left": [
-     "A"
-    ],
-    "right": [
-     "K"
-    ]
-   },
-   "note": "Joins the MT3608 to VSYS; the Pico's own diode joins VBUS to VSYS, so whichever is higher runs it, and nothing flows back into the USB port."
-  },
-  {
-   "ref": "U1",
-   "name": "Pico 2 W",
-   "item": "electronics/pico_2w",
-   "x": 40,
-   "y": 50,
-   "pins": {
-    "left": [
-     "VBUS:40",
-     "VSYS:39",
-     "GND:38",
-     "3V3:36",
-     "D+:TP3",
-     "D-:TP2"
-    ],
-    "right": [
-     "GP2:4",
-     "GP3:5",
-     "GP4:6",
-     "GP5:7",
-     "GP6:9"
-    ]
-   },
-   "note": "On its side behind the LED stick. USB data reaches it on test pads TP3 (D+) and TP2 (D-) on its underside, so its micro-USB port is not used. It can tell USB is in from VBUS sense (WL_GPIO2 on the Pico 2 W)."
-  },
-  {
-   "ref": "LED1",
-   "name": "WS2812 x8",
-   "item": "electronics/ws2812_stick_8",
-   "x": 68,
-   "y": 50,
-   "pins": {
-    "left": [
-     "5V",
-     "GND",
-     "DIN"
-    ]
-   },
-   "note": "Eight LEDs in the lid's windows; up to about 480 mA at full white. Its data comes straight from the 3.3 V GPIO, which works at this supply in practice."
-  },
-  {
-   "ref": "SW1",
-   "name": "TSD-1166",
-   "item": "electronics/tsd_1166_button",
-   "x": 68,
-   "y": 61,
-   "pins": {
-    "left": [
-     "S1",
-     "S2",
-     "LED+",
-     "LED-"
-    ]
-   },
-   "note": "Push button with a white LED ring, through the back wall. The switch reads on GP3 with the internal pull-up."
-  },
-  {
-   "ref": "R2",
-   "name": "47R",
-   "x": 86,
-   "y": 62,
-   "w": 10,
-   "symbol": "resistor",
-   "modelled": false,
-   "pins": {
-    "left": [
-     "1"
-    ],
-    "right": [
-     "2"
-    ]
-   },
-   "note": "Limits the button's LED to a few mA from the 3.3 V GPIO; check against the LED's rating."
-  },
-  {
-   "ref": "BZ1",
-   "name": "Buzzer 5V",
-   "item": "electronics/buzzer_12x9",
-   "x": 68,
-   "y": 74,
-   "pins": {
-    "left": [
-     "+",
-     "-"
-    ]
-   },
-   "note": "Active 5 V buzzer, 30 mA: more than a GPIO gives, so Q1 switches it."
-  },
-  {
-   "ref": "Q1",
-   "name": "NPN",
-   "x": 88,
-   "y": 74,
-   "symbol": "npn",
-   "modelled": false,
-   "pins": {
-    "left": [
-     "B"
-    ],
-    "right": [
-     "C",
-     "E"
-    ]
-   },
-   "note": "Any small NPN (BC337, 2N2222)."
-  },
-  {
-   "ref": "R3",
-   "name": "1k",
-   "x": 88,
-   "y": 85,
-   "w": 10,
-   "symbol": "resistor",
-   "modelled": false,
-   "pins": {
-    "left": [
-     "1"
-    ],
-    "right": [
-     "2"
-    ]
-   }
-  },
-  {
-   "ref": "U5",
-   "name": "DS18B20",
-   "item": "electronics/ds18b20",
-   "x": 10,
-   "y": 64,
-   "pins": {
-    "right": [
-     "VDD",
-     "DQ",
-     "GND"
-    ]
-   },
-   "note": "Measures the air inside the box; one-wire on GP6."
-  },
-  {
-   "ref": "R1",
-   "name": "4k7",
-   "x": 10,
-   "y": 74,
-   "w": 10,
-   "symbol": "resistor",
-   "modelled": false,
-   "pins": {
-    "left": [
-     "1"
-    ],
-    "right": [
-     "2"
-    ]
-   },
-   "note": "The one-wire bus's pull-up."
-  }
+  {"ref": "J1", "name": "USB-C breakout", "item": "electronics/usb_c_breakout", "x": 0, "y": 0,
+   "pins": {"right": ["VBUS", "GND", "D+", "D-", "CC1", "CC2"]},
+   "note": "The only USB port on the unit. CC1 and CC2 each have a 5.1 k resistor to GND on the board, so a USB-C charger supplies 5 V; SBU1 and SBU2 are not used."},
+  {"ref": "U2", "name": "TP4056", "item": "power/tp4056_charger", "x": 26, "y": 0,
+   "pins": {"left": ["IN+", "IN-"], "right": ["B+", "B-", "OUT+", "OUT-"]},
+   "note": "1 A single-cell charger with protection (DW01 + 8205A), on the holder. Its own USB-C port is not used: power comes in on IN+ and IN-. IN- and OUT- are joined on the board."},
+  {"ref": "U3", "name": "1S BMS", "item": "power/bms_1s_3a", "x": 50, "y": 0,
+   "pins": {"left": ["B+", "B-"], "right": ["P-"]},
+   "note": "Mantech 210454 protection strip, on the cell. A second layer of protection in series with the TP4056's own; it can be left out."},
+  {"ref": "BT1", "name": "18650", "item": "battery_holders/single_18650_holder", "x": 50, "y": 12, "w": 12,
+   "symbol": "cell", "pins": {"left": ["+"], "right": ["-"]},
+   "note": "One 18650 cell in its holder, glued to the floor."},
+  {"ref": "D3", "name": "1N5822", "item": "electronics/diode_1n5822", "x": 26, "y": 23, "w": 10,
+   "symbol": "diode", "pins": {"left": ["A"], "right": ["K"]},
+   "note": "The cell's side of the diode OR, on the wiring board."},
+  {"ref": "D2", "name": "1N5822", "item": "electronics/diode_1n5822", "x": 26, "y": 31, "w": 10,
+   "symbol": "diode", "pins": {"left": ["A"], "right": ["K"]},
+   "note": "USB's side of the diode OR, on the wiring board."},
+  {"ref": "U4", "name": "MT3608", "item": "power/mt3608_boost", "x": 50, "y": 26,
+   "pins": {"left": ["VIN+", "VIN-"], "right": ["VOUT+", "VOUT-"]},
+   "note": "Boost converter: set its trimmer for about 5.2 V out before connecting the Pico. It runs from 2 V up, so the diode's drop costs little of the cell."},
+  {"ref": "D1", "name": "1N5822", "item": "electronics/diode_1n5822", "x": 70, "y": 26, "w": 10,
+   "symbol": "diode", "pins": {"left": ["A"], "right": ["K"]},
+   "note": "Joins the MT3608 to VSYS, on the wiring board; the Pico's own diode joins VBUS to VSYS, so whichever is higher runs it, and nothing flows back into the USB port."},
+  {"ref": "U1", "name": "Pico 2 W", "item": "electronics/pico_2w", "x": 40, "y": 46,
+   "pins": {"left": ["VBUS:40", "VSYS:39", "GND:38", "3V3:36", "D+:TP3", "D-:TP2"],
+            "right": ["GP2:4", "GP3:5", "GP4:6", "GP5:7", "GP6:9"]},
+   "note": "On its side behind the LED stick. USB data reaches it on test pads TP3 (D+) and TP2 (D-) on its underside, so its micro-USB port is not used. It can tell USB is in from VBUS sense (WL_GPIO2 on the Pico 2 W)."},
+  {"ref": "LED1", "name": "WS2812 x8", "item": "electronics/ws2812_stick_8", "x": 82, "y": 42,
+   "pins": {"left": ["5V", "GND", "DIN"]},
+   "note": "Eight LEDs in the lid's windows; up to about 480 mA at full white. Its data comes straight from the 3.3 V GPIO, which works at this supply in practice."},
+  {"ref": "R2", "name": "47R", "item": "electronics/resistor_025w", "x": 60, "y": 56, "w": 10,
+   "symbol": "resistor", "pins": {"left": ["1"], "right": ["2"]},
+   "note": "Limits the button's LED to a few mA from the 3.3 V GPIO; check against the LED's rating."},
+  {"ref": "SW1", "name": "TSD-1166", "item": "electronics/tsd_1166_button", "x": 82, "y": 55,
+   "pins": {"left": ["S1", "S2", "LED+", "LED-"]},
+   "note": "Push button with a white LED ring, through the back wall. The switch reads on GP3 with the internal pull-up."},
+  {"ref": "R3", "name": "1k", "item": "electronics/resistor_025w", "x": 46, "y": 70, "w": 10,
+   "symbol": "resistor", "pins": {"left": ["1"], "right": ["2"]},
+   "note": "The transistor's base resistor."},
+  {"ref": "Q1", "name": "BC337", "item": "electronics/npn_bc337", "x": 64, "y": 68,
+   "symbol": "npn", "pins": {"left": ["B"], "right": ["C", "E"]},
+   "note": "Switches the buzzer: a GPIO cannot give its 30 mA."},
+  {"ref": "BZ1", "name": "Buzzer 5V", "item": "electronics/buzzer_12x9", "x": 82, "y": 70,
+   "pins": {"left": ["+", "-"]},
+   "note": "Active 5 V buzzer, 30 mA, beside the button."},
+  {"ref": "U5", "name": "DS18B20", "item": "electronics/ds18b20", "x": 12, "y": 56,
+   "pins": {"right": ["VDD", "DQ", "GND"]},
+   "note": "Measures the air inside the box; one-wire on GP6."},
+  {"ref": "R1", "name": "4k7", "item": "electronics/resistor_025w", "x": 12, "y": 70, "w": 10,
+   "symbol": "resistor", "pins": {"left": ["1"], "right": ["2"]},
+   "note": "The one-wire bus's pull-up."}
  ],
  "nets": [
-  {
-   "name": "VBUS",
-   "kind": "power",
-   "pins": [
-    "J1.VBUS",
-    "U2.IN+",
-    "U1.VBUS",
-    "D2.A",
-    "Q2.G",
-    "R4.1"
-   ],
-   "note": "5 V from the USB-C port. It charges the cell, feeds the Pico (through its own diode) and, through D2, the MT3608; it also turns Q2 off."
-  },
-  {
-   "name": "GND",
-   "kind": "ground",
-   "pins": [
-    "J1.GND",
-    "U2.IN-",
-    "U2.OUT-",
-    "R4.2",
-    "U4.VIN-",
-    "U4.VOUT-",
-    "U1.GND",
-    "LED1.GND",
-    "SW1.S2",
-    "SW1.LED-",
-    "Q1.E",
-    "U5.GND"
-   ],
-   "note": "The protected side of the TP4056 (IN- and OUT-, joined on its board). Never join it to B- or the cell's negative."
-  },
-  {
-   "name": "CELL+",
-   "kind": "power",
-   "pins": [
-    "BT1.+",
-    "U3.B+",
-    "U2.B+"
-   ]
-  },
-  {
-   "name": "CELL-",
-   "kind": "ground",
-   "pins": [
-    "BT1.-",
-    "U3.B-"
-   ]
-  },
-  {
-   "name": "PACK-",
-   "kind": "ground",
-   "pins": [
-    "U3.P-",
-    "U2.B-"
-   ],
-   "note": "Through the BMS strip's MOSFETs. Leave the strip out and the cell's negative goes straight to the TP4056's B-."
-  },
-  {
-   "name": "BAT",
-   "kind": "power",
-   "pins": [
-    "U2.OUT+",
-    "Q2.D"
-   ],
-   "note": "The protected cell, 3.0 to 4.2 V."
-  },
-  {
-   "name": "SYS_IN",
-   "kind": "power",
-   "pins": [
-    "Q2.S",
-    "D2.K",
-    "U4.VIN+"
-   ],
-   "note": "The MT3608's input: the cell through Q2, or VBUS through D2."
-  },
-  {
-   "name": "BOOST",
-   "kind": "power",
-   "pins": [
-    "U4.VOUT+",
-    "D1.A"
-   ],
-   "note": "About 5.2 V, set on the MT3608."
-  },
-  {
-   "name": "VSYS",
-   "kind": "power",
-   "pins": [
-    "D1.K",
-    "U1.VSYS",
-    "LED1.5V",
-    "BZ1.+"
-   ],
-   "note": "About 4.8 V after the diode: the Pico, the LEDs and the buzzer."
-  },
-  {
-   "name": "3V3",
-   "kind": "power",
-   "pins": [
-    "U1.3V3",
-    "U5.VDD",
-    "R1.1"
-   ],
-   "note": "The Pico's regulator out."
-  },
-  {
-   "name": "USB_D+",
-   "kind": "data",
-   "pins": [
-    "J1.D+",
-    "U1.D+"
-   ],
-   "note": "Short, and twisted with USB_D-."
-  },
-  {
-   "name": "USB_D-",
-   "kind": "data",
-   "pins": [
-    "J1.D-",
-    "U1.D-"
-   ]
-  },
-  {
-   "name": "LED_DIN",
-   "kind": "data",
-   "pins": [
-    "U1.GP2",
-    "LED1.DIN"
-   ]
-  },
-  {
-   "name": "BUTTON",
-   "kind": "signal",
-   "pins": [
-    "U1.GP3",
-    "SW1.S1"
-   ],
-   "note": "Low when pressed (internal pull-up)."
-  },
-  {
-   "name": "RING",
-   "kind": "signal",
-   "pins": [
-    "U1.GP4",
-    "R2.1"
-   ],
-   "note": "The button's LED ring: high is on, PWM to dim."
-  },
-  {
-   "name": "RING_A",
-   "kind": "signal",
-   "pins": [
-    "R2.2",
-    "SW1.LED+"
-   ]
-  },
-  {
-   "name": "BUZZ",
-   "kind": "signal",
-   "pins": [
-    "U1.GP5",
-    "R3.1"
-   ],
-   "note": "High sounds the buzzer."
-  },
-  {
-   "name": "BUZZ_B",
-   "kind": "signal",
-   "pins": [
-    "R3.2",
-    "Q1.B"
-   ]
-  },
-  {
-   "name": "BUZZ_C",
-   "kind": "signal",
-   "pins": [
-    "BZ1.-",
-    "Q1.C"
-   ]
-  },
-  {
-   "name": "1WIRE",
-   "kind": "data",
-   "pins": [
-    "U1.GP6",
-    "U5.DQ",
-    "R1.2"
-   ]
-  }
+  {"name": "VBUS", "kind": "power", "pins": ["J1.VBUS", "U2.IN+", "D2.A", "U1.VBUS"],
+   "note": "5 V from the USB-C port. It charges the cell, feeds the Pico (through its own diode) and, through D2, the MT3608."},
+  {"name": "GND", "kind": "ground",
+   "pins": ["J1.GND", "U2.IN-", "U2.OUT-", "U4.VIN-", "U4.VOUT-", "U1.GND", "LED1.GND", "SW1.S2",
+            "SW1.LED-", "Q1.E", "U5.GND"],
+   "note": "The protected side of the TP4056 (IN- and OUT-, joined on its board). Never join it to B- or the cell's negative."},
+  {"name": "CELL+", "kind": "power", "pins": ["U2.B+", "U3.B+", "BT1.+"]},
+  {"name": "CELL-", "kind": "ground", "pins": ["BT1.-", "U3.B-"]},
+  {"name": "PACK-", "kind": "ground", "pins": ["U3.P-", "U2.B-"],
+   "note": "Through the BMS strip's MOSFETs. Leave the strip out and the cell's negative goes straight to the TP4056's B-."},
+  {"name": "BAT", "kind": "power", "pins": ["U2.OUT+", "D3.A"], "note": "The protected cell, 3.0 to 4.2 V."},
+  {"name": "SYS_IN", "kind": "power", "pins": ["D3.K", "D2.K", "U4.VIN+"],
+   "note": "The MT3608's input: the higher of VBUS and the cell, less a diode's drop."},
+  {"name": "BOOST", "kind": "power", "pins": ["U4.VOUT+", "D1.A"], "note": "About 5.2 V, set on the MT3608."},
+  {"name": "VSYS", "kind": "power", "pins": ["D1.K", "U1.VSYS", "LED1.5V", "BZ1.+"],
+   "note": "About 4.8 V after the diode: the Pico, the LEDs and the buzzer."},
+  {"name": "3V3", "kind": "power", "pins": ["U1.3V3", "U5.VDD", "R1.1"], "note": "The Pico's regulator out."},
+  {"name": "USB_D+", "kind": "data", "pins": ["J1.D+", "U1.D+"], "note": "Short, and twisted with USB_D-."},
+  {"name": "USB_D-", "kind": "data", "pins": ["J1.D-", "U1.D-"]},
+  {"name": "LED_DIN", "kind": "data", "pins": ["U1.GP2", "LED1.DIN"]},
+  {"name": "BUTTON", "kind": "signal", "pins": ["U1.GP3", "SW1.S1"], "note": "Low when pressed (internal pull-up)."},
+  {"name": "RING", "kind": "signal", "pins": ["U1.GP4", "R2.1"], "note": "The button's LED ring: high is on, PWM to dim."},
+  {"name": "RING_A", "kind": "signal", "pins": ["R2.2", "SW1.LED+"]},
+  {"name": "BUZZ", "kind": "signal", "pins": ["U1.GP5", "R3.1"], "note": "High sounds the buzzer."},
+  {"name": "BUZZ_B", "kind": "signal", "pins": ["R3.2", "Q1.B"]},
+  {"name": "BUZZ_C", "kind": "signal", "pins": ["BZ1.-", "Q1.C"]},
+  {"name": "1WIRE", "kind": "data", "pins": ["U1.GP6", "U5.DQ", "R1.2"]}
  ]
 }

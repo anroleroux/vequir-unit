@@ -9,9 +9,10 @@ with M1.2 x 3 countersunk screws, and behind it the MT3608 boost board
 stands on its side in two slotted posts. A horizontal USB-C breakout sits on
 two pegged pillars at the front, its receptacle behind the front wall's plug
 hole; the TSD-1166 LED push button goes through the back wall; the active
-buzzer stands beside it, and the bare DS18B20 in the air at the front. A
-1N5822 diode, from the MT3608's output to the Pico's VSYS, hangs on its
-leads above the MT3608. The
+buzzer stands beside it, and the bare DS18B20 in the air at the front. The
+wiring board (LS1/wiring_board: the three 1N5822 diodes, three resistors and
+the buzzer's transistor on a perfboard) is screwed to four pillars in front
+of the holder with M1.2 x 6 countersunk screws. The
 lid is seated on top, and the WS2812 8 x 1 stick is screwed to two pillars
 inside its +y skirt with M1.2 x 3 countersunk screws, each LED in its
 window, in front of the Pico. The bought-in parts come from vequir-standard.
@@ -20,7 +21,7 @@ The base and the lid come from their own scripts through load_part, the
 rest through load_library, so the model follows any change to them.
 
 The summary's interference lists each screw against what it is screwed into
-(the base's posts and the lid's pillars): a screw's 1.2 mm shank forming its
+(the base's posts and pillars, and the lid's pillars): a screw's 1.2 mm shank forming its
 thread in a 0.95 mm tap hole, as intended, and marked as a thread.
 
 Assumptions where the description is silent:
@@ -39,7 +40,8 @@ holder = load_library("battery_holders/single_18650_holder")
 boost = load_library("power/mt3608_boost")
 bms = load_library("power/bms_1s_3a")
 charger = load_library("power/tp4056_charger")
-diode = load_library("electronics/diode_1n5822")
+wiring = load_part("wiring_board")  # the perfboard and its parts, standing on z = 0
+board_screw = load_library("hardware/m1_2x6_countersunk")
 usbc = load_library("electronics/usb_c_breakout")
 button = load_library("electronics/tsd_1166_button")
 stick = load_library("electronics/ws2812_stick_8")
@@ -69,8 +71,9 @@ result = (
     .add(bms.result, name="bms_1s_3a", loc=at(base.bms_x, base.bms_y, base.bms_z), color=board_green)
     .add(charger.result, name="tp4056_charger",
          loc=at(base.charger_x, base.charger_y, base.charger_z), color=board_blue)
-    .add(diode.result, name="diode_1n5822",
-         loc=at(base.diode_x, base.diode_y, base.diode_z), color=black)
+    # a quarter turn about z: the board's columns run across the breadth
+    .add(wiring.result, name="wiring_board",
+         loc=at(base.wb_x, base.wb_y, base.wb_z, cq.Vector(0, 0, 1), 90))
     # a quarter turn about x: -90 takes the board's +z (its parts) to +y, +90 to -y
     .add(pico.result, name="pico_2w",
          loc=at(base.pico_x, base.pico_y, base.pico_z, x_axis, -90), color=board_green)
@@ -98,6 +101,10 @@ stick_head = base.stick_y - base.head_out(stick.hole)
 for i, (x, z) in enumerate(base.stick_holes, start=1):
     result.add(screw.result, name=f"stick_screw_{i}",
                loc=at(x, stick_head + screw.length, z, x_axis, 90), color=steel)
+
+for i, (x, y) in enumerate(base.wb_holes, start=1):
+    result.add(board_screw.result, name=f"board_screw_{i}",
+               loc=at(x, y, base.wb_screw_top - board_screw.length), color=steel)
 
 result.add(lid.result, name="lid", loc=at(0, 0, base.h - lid.seat_height),
            color=cq.Color(0.40, 0.68, 0.45))

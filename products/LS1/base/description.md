@@ -13,8 +13,12 @@ lies on the holder behind it, on top of the cell.
 Behind the LED strip on the lid, a Raspberry Pi Pico 2 W is mounted on its
 side, fixed with M1.2 countersunk screws to pillars rising from the floor.
 Behind the Pico, the MT3608 boost converter is also mounted on its side, held
-by pillars. A 1N5822 Schottky diode (a small cylinder) joins the converter's
-output to the Pico's VSYS.
+by pillars.
+
+In front of the holder, a small perfboard (the wiring board) holds the
+three 1N5822 diodes, the three resistors and the buzzer's transistor; it is
+screwed with M1.2 countersunk screws to pillars rising from the floor. The
+box is made longer to fit it.
 
 In front of the holder a horizontal USB-C breakout board sits on pillars with
 its receptacle against the inside of the front wall, and the front wall has a

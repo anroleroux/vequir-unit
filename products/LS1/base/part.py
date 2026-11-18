@@ -8,8 +8,11 @@ front end and the single-cell BMS strip on its cell behind that.
 Along the +y side, behind the WS2812 stick on the lid, a Pico 2 W stands on
 its side, screwed with four M1.2 x 3 countersunk screws to four posts rising
 from the floor, and behind it the MT3608 boost board stands on its side in
-two slotted posts. A horizontal USB-C breakout sits on two pillars at the
-front, its receptacle behind a USB-C plug hole in the front wall; the
+two slotted posts. In front of the holder the wiring board (a perfboard
+with the diodes, resistors and transistor) is screwed to four pillars with
+M1.2 x 6 countersunk screws, and in front of it a horizontal USB-C breakout
+sits on two pillars, its receptacle behind a USB-C plug hole in the front
+wall; the
 TSD-1166 LED push button goes through a round hole in the back wall; the
 active buzzer stands on the floor beside the button, and the bare DS18B20
 stands in the open air at the front. The box is sized from the parts, so it
@@ -30,7 +33,7 @@ Assumptions where the description is silent:
   3 x 3 mm, up to 1.5 mm above its upper holes, with M1.2 tap holes
   (0.95 mm, 2.5 mm deep) in line with its mounting holes; the Pico and the
   stick are centred on the same x, the Pico's +x posts 1 mm behind the
-  USB-C board;
+  wiring board;
 - the MT3608 stands on the floor, centred on the Pico's x; each of its two
   posts is 12 mm tall and holds one end of the board in a vertical slot
   (the board's 1.6 mm plus 0.2 mm), 1.2 mm deep, with 1.5 mm walls, clear of
@@ -39,9 +42,11 @@ Assumptions where the description is silent:
   holder body's front, its USB-C end (IN+ and IN-) forward, toward the USB-C
   breakout; its own USB-C port is not used; the BMS lies on the top of the
   cell behind it, along it, 1 mm clear (both glued or held by their leads);
-- the 1N5822 diode from the MT3608's output to the Pico's VSYS hangs on its
-  straight leads above the MT3608, along x, centred on it, its body 0.5 mm
-  under the lid; its anode (from the MT3608) toward -x;
+- the wiring board lies 1 mm in front of the holder, its 14 columns across
+  the breadth (turned a quarter turn about z), centred across it, on four
+  2.5 mm square pillars 3 mm tall (clear of its leads, which stand 1.4 mm out
+  underneath), one under each drilled corner hole, each with an M1.2 tap
+  hole (0.95 mm) 4.5 mm deep; the USB-C breakout is 1 mm in front of it;
 - the USB-C breakout's holes are larger (3.2 mm) than an M1.2 screw's head,
   so its two pillars (5 mm round, 2 mm tall) each carry a 3.0 mm peg
   through the board's hole, to glue or melt over, instead of a screw;
@@ -61,7 +66,7 @@ holder = load_library("battery_holders/single_18650_holder")  # the cell in its 
 boost = load_library("power/mt3608_boost")  # 36 x 17 boost board
 bms = load_library("power/bms_1s_3a")  # 30.3 x 3.7 protection strip
 charger = load_library("power/tp4056_charger")  # 28 x 17, USB-C at +x
-diode = load_library("electronics/diode_1n5822")  # along x, cathode at +x, axis at z = 0
+wiring = load_part("../wiring_board")  # the perfboard and its parts, standing on z = 0
 usbc = load_library("electronics/usb_c_breakout")  # receptacle at +x
 button = load_library("electronics/tsd_1166_button")  # axis along z, legs on z = 0
 pico = load_library("electronics/pico_2w")  # USB at -x, underside on z = 0
@@ -69,6 +74,7 @@ stick = load_library("electronics/ws2812_stick_8")  # on the lid's +y skirt
 buzzer = load_library("electronics/buzzer_12x9")  # pins' tips on z = 0
 sensor = load_library("electronics/ds18b20")  # TO-92, leads' tips on z = 0
 screw = load_library("hardware/m1_2x3_countersunk")  # for the Pico and the stick
+board_screw = load_library("hardware/m1_2x6_countersunk")  # for the wiring board
 
 # the driving variables, in mm
 h = 30.0  # height, outside, along z
@@ -97,6 +103,9 @@ button_in = 2.0  # its body, in from the +y side
 plug_clearance = 0.5  # all round the USB-C plug in its hole
 usbc_w = 8.25  # USB-C plug shell width
 usbc_h = 2.4  # USB-C plug shell height
+board_pillar = 2.5  # the wiring board's pillars, square
+board_pillar_h = 3.0  # clear of the leads under the board
+board_tap_depth = 4.5  # from the pillars' tops
 
 # the screw heads' rise above a board: a 90 degree head sits down in a plain
 # hole until its cone is as wide as the hole; the short edge at dk stays above
@@ -116,7 +125,8 @@ hb = holder.result.toCompound().BoundingBox()
 holder_length, holder_breadth = hb.xlen, hb.ylen
 
 b = holder_breadth + holder_edge_in  # breadth, outside
-l = 2 * wall + holder_length + gap + usbc.length  # length, outside
+wb = wiring.board  # the perfboard: length (across the breadth), width (along x)
+l = 2 * wall + holder_length + gap + wb.width + gap + usbc.length  # length, outside
 back_inside = -l / 2 + wall
 front_inside = l / 2 - wall
 
@@ -136,17 +146,26 @@ bms_y = holder_dy  # the cell's axis
 bms_z = holder_dz + holder.axis_height + holder.cell.diameter / 2
 assert charger.width <= holder.body.width, "the TP4056 is wider than the holder"
 
+# the wiring board in front of the holder, turned so its columns run across
+front_zone = back_inside + holder_length + gap  # where the holder's room ends
+wb_x = front_zone + wb.width / 2
+wb_y = 0.0
+wb_z = wall + board_pillar_h  # its underside
+wb_holes = [(wb_x - y, wb_y + x) for x, y in wb.mount_holes]  # a quarter turn about z
+wb_screw_top = wb_z + wb.thickness + board_screw.edge_height + (board_screw.head_diameter - wb.mount_hole) / 2
+assert wb.length < b, "the wiring board is wider than the box"
+
 # the USB-C board on its pillars, mouth against the front wall
 usbc_x = front_inside - usbc.length / 2
 usbc_y = 0.0
 usbc_z = wall + pillar_h
 usbc_axis = usbc_z + usbc.usb_axis_z  # the plug hole's centre height
 usbc_pegs = [(usbc_x + x, usbc_y + y) for x, y in usbc.mount_holes]
-assert usbc_x - usbc.length / 2 > back_inside + holder_length, "the USB-C board runs into the holder"
+assert usbc_x - usbc.length / 2 >= wb_x + wb.width / 2 + gap - 1e-6, "the USB-C board runs into the wiring board"
 
 # the Pico on its side, parts facing +y, and its posts
 pico_mounts = [(sx * pico.mount_x / 2, sy * pico.mount_y / 2) for sx in (-1, 1) for sy in (-1, 1)]
-pico_x = usbc_x - usbc.length / 2 - gap - (pico.mount_x / 2 + post / 2)
+pico_x = front_zone - gap - (pico.mount_x / 2 + post / 2)
 pico_y = b / 2 - pico_under_in  # its underside's plane
 pico_z = wall + pico_lift + pico.width / 2  # its centre line
 pico_holes = [(pico_x + x, pico_z - y) for x, y in pico_mounts]  # (x, z), turned about x
@@ -181,11 +200,6 @@ assert buzzer_x + buzzer.diameter / 2 < pico_x - pico.length / 2 - 1.3, "the buz
 sensor_x = usbc_x
 sensor_y = (-b / 2 + usbc_y - usbc.width / 2) / 2  # between the -y side and the USB-C board
 sensor_z = wall
-
-# the diode above the MT3608, under the lid
-diode_x = mt_x
-diode_y = (holder_edge + pico_y) / 2  # between the holder and the Pico
-diode_z = h - 0.5 - diode.body_d / 2  # its axis
 
 channel = (
     cq.Workplane("XY", origin=(0, 0, wall))
@@ -235,7 +249,17 @@ mt_slots = (
                  for s in (-1, 1)])
     .rect(slot_engagement + slot_clearance / 2, slot_w).extrude(slot_post_h)
 )
-result = result.union(pillars).union(pico_posts).cut(pico_taps).union(mt_posts.cut(mt_slots))
+# the wiring board's pillars and their tap holes
+board_pillars = (
+    cq.Workplane("XY", origin=(0, 0, wall)).pushPoints(wb_holes)
+    .rect(board_pillar, board_pillar).extrude(board_pillar_h)
+)
+board_taps = (
+    cq.Workplane("XY", origin=(0, 0, wb_z - board_tap_depth)).pushPoints(wb_holes)
+    .circle(tap_drill / 2).extrude(board_tap_depth)
+)
+result = (result.union(pillars).union(pico_posts).cut(pico_taps).union(mt_posts.cut(mt_slots))
+          .union(board_pillars).cut(board_taps))
 
 regions = {
     "rim": result.faces(">Z"),  # the tops of the two end walls, where the lid sits
@@ -249,7 +273,10 @@ regions = {
     "pico_post_faces": result.faces("%PLANE").filter(  # where the Pico's underside rests
         lambda f: f.normalAt().y > 0.999 and abs(f.Center().y - pico_y) < 1e-6),
     "pico_tap_holes": result.faces("%CYLINDER").filter(
-        lambda f: abs(f.BoundingBox().xlen - tap_drill) < 1e-3),
+        lambda f: abs(f.BoundingBox().xlen - tap_drill) < 1e-3
+        and abs(f.BoundingBox().ylen - tap_depth) < 1e-3),
+    "board_tap_holes": result.faces("%CYLINDER").filter(
+        lambda f: abs(f.BoundingBox().zlen - board_tap_depth) < 1e-3),
     "mt_slots": result.faces("%PLANE").filter(  # the slots' bottoms, where the board's ends go
         lambda f: abs(abs(f.normalAt().x) - 1) < 1e-6
         and abs(abs(f.Center().x - mt_x) - (boost.length / 2 + slot_clearance / 2)) < 1e-6),
