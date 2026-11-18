@@ -49,10 +49,22 @@ def test_the_ls1_assembly_places_everything_without_interference(tmp_path):
     names = {c["name"].split("/")[-1] for c in summary["components"]}
     assert names == {"base", "single_18650_holder", "mt3608_boost", "bms_1s_3a",
                      "usb_c_breakout", "tsd_1166_button", "ws2812_stick_8", "pico_2w",
-                     "buzzer", "ds18b20", "lid"} | {f"pico_screw_{n}" for n in range(1, 5)} \
+                     "buzzer", "ds18b20", "tp4056_charger", "diode_1n5822", "lid"} | {f"pico_screw_{n}" for n in range(1, 5)} \
         | {f"stick_screw_{n}" for n in range(1, 3)}
     touching = {(c["a"].split("/")[-1], c["b"].split("/")[-1]) for c in summary["contacts"]}
     assert ("ws2812_stick_8", "lid") in touching  # the stick against the skirt
     assert ("base", "tsd_1166_button") in touching  # the button body against the back wall
     assert ("base", "pico_2w") in touching  # the Pico on its posts
     assert ("base", "mt3608_boost") in touching  # the MT3608 in its slots
+    assert ("single_18650_holder", "tp4056_charger") in touching  # the charger on the holder's rims
+
+
+def test_the_ls1_schematic_names_only_real_pins_and_its_modelled_parts():
+    """schematic.json passes the tool's checks, and every part it links names
+    an item the assembled model places."""
+    from cad.schematic import load
+    data = load(LS1 / "schematic.json")
+    script = (LS1 / "assembly.py").read_text() + (LS1 / "base" / "part.py").read_text()
+    for comp in data["components"]:
+        if comp.get("item"):
+            assert f'"{comp["item"]}"' in script, comp["ref"]

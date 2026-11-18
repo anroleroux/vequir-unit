@@ -2,13 +2,16 @@
 
 The LS1: the base with a single 18650 holder and its cell (vequir-power's
 battery_holders/single_18650_holder) glued on the floor against the back
-wall along the -y side, the single-cell BMS strip lying on the cell. Along
+wall along the -y side, the TP4056 charger module lying across its front
+end and the single-cell BMS strip on the cell behind it. Along
 the +y side a Pico 2 W stands on its side, screwed to the base's four posts
 with M1.2 x 3 countersunk screws, and behind it the MT3608 boost board
 stands on its side in two slotted posts. A horizontal USB-C breakout sits on
 two pegged pillars at the front, its receptacle behind the front wall's plug
 hole; the TSD-1166 LED push button goes through the back wall; the active
-buzzer stands beside it, and the bare DS18B20 in the air at the front. The
+buzzer stands beside it, and the bare DS18B20 in the air at the front. A
+1N5822 diode, from the MT3608's output to the Pico's VSYS, hangs on its
+leads above the MT3608. The
 lid is seated on top, and the WS2812 8 x 1 stick is screwed to two pillars
 inside its +y skirt with M1.2 x 3 countersunk screws, each LED in its
 window, in front of the Pico. The bought-in parts come from vequir-standard.
@@ -35,6 +38,8 @@ lid = load_part("lid")  # modelled as installed: skirts stand on z = 0
 holder = load_library("battery_holders/single_18650_holder")
 boost = load_library("power/mt3608_boost")
 bms = load_library("power/bms_1s_3a")
+charger = load_library("power/tp4056_charger")
+diode = load_library("electronics/diode_1n5822")
 usbc = load_library("electronics/usb_c_breakout")
 button = load_library("electronics/tsd_1166_button")
 stick = load_library("electronics/ws2812_stick_8")
@@ -62,6 +67,10 @@ result = (
     .add(holder.result, name="single_18650_holder",
          loc=at(base.holder_dx, base.holder_dy, base.holder_dz))
     .add(bms.result, name="bms_1s_3a", loc=at(base.bms_x, base.bms_y, base.bms_z), color=board_green)
+    .add(charger.result, name="tp4056_charger",
+         loc=at(base.charger_x, base.charger_y, base.charger_z), color=board_blue)
+    .add(diode.result, name="diode_1n5822",
+         loc=at(base.diode_x, base.diode_y, base.diode_z), color=black)
     # a quarter turn about x: -90 takes the board's +z (its parts) to +y, +90 to -y
     .add(pico.result, name="pico_2w",
          loc=at(base.pico_x, base.pico_y, base.pico_z, x_axis, -90), color=board_green)

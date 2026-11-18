@@ -3,7 +3,8 @@
 A floor and two end walls, open at the top and along both long sides, like
 the PB6 base but for one cell. A single 18650 holder from the parts library
 (battery_holders/single_18650_holder) is glued on the floor against the back
-wall along the -y side, with the single-cell BMS strip lying on its cell.
+wall along the -y side, with the TP4056 charger module lying across its
+front end and the single-cell BMS strip on its cell behind that.
 Along the +y side, behind the WS2812 stick on the lid, a Pico 2 W stands on
 its side, screwed with four M1.2 x 3 countersunk screws to four posts rising
 from the floor, and behind it the MT3608 boost board stands on its side in
@@ -34,8 +35,13 @@ Assumptions where the description is silent:
   posts is 12 mm tall and holds one end of the board in a vertical slot
   (the board's 1.6 mm plus 0.2 mm), 1.2 mm deep, with 1.5 mm walls, clear of
   the corner holes; the board slides in from the top;
-- the BMS lies on the top of the cell, centred on the holder, along it
-  (glued or held by its leads);
+- the TP4056 module lies on the holder's rims, its front end flush with the
+  holder body's front, its USB-C end (IN+ and IN-) forward, toward the USB-C
+  breakout; its own USB-C port is not used; the BMS lies on the top of the
+  cell behind it, along it, 1 mm clear (both glued or held by their leads);
+- the 1N5822 diode from the MT3608's output to the Pico's VSYS hangs on its
+  straight leads above the MT3608, along x, centred on it, its body 0.5 mm
+  under the lid; its anode (from the MT3608) toward -x;
 - the USB-C breakout's holes are larger (3.2 mm) than an M1.2 screw's head,
   so its two pillars (5 mm round, 2 mm tall) each carry a 3.0 mm peg
   through the board's hole, to glue or melt over, instead of a screw;
@@ -54,6 +60,8 @@ import cadquery as cq
 holder = load_library("battery_holders/single_18650_holder")  # the cell in its holder
 boost = load_library("power/mt3608_boost")  # 36 x 17 boost board
 bms = load_library("power/bms_1s_3a")  # 30.3 x 3.7 protection strip
+charger = load_library("power/tp4056_charger")  # 28 x 17, USB-C at +x
+diode = load_library("electronics/diode_1n5822")  # along x, cathode at +x, axis at z = 0
 usbc = load_library("electronics/usb_c_breakout")  # receptacle at +x
 button = load_library("electronics/tsd_1166_button")  # axis along z, legs on z = 0
 pico = load_library("electronics/pico_2w")  # USB at -x, underside on z = 0
@@ -118,10 +126,15 @@ holder_dz = wall - hb.zmin  # on the floor
 holder_edge = -b / 2 + holder_breadth
 assert hb.zlen < h - wall, "the holder is taller than the space inside"
 
-# the BMS on the cell
-bms_x = back_inside + holder_length / 2
+# the TP4056 on the holder's rims at its front end, the BMS on the cell behind it
+holder_front = holder_dx + holder.body.length / 2  # the body's front, its outer end wall
+charger_x = holder_front - charger.length / 2
+charger_y = holder_dy  # centred on the holder
+charger_z = holder_dz + holder.body.height  # on the rims
+bms_x = charger_x - charger.length / 2 - gap - bms.length / 2
 bms_y = holder_dy  # the cell's axis
 bms_z = holder_dz + holder.axis_height + holder.cell.diameter / 2
+assert charger.width <= holder.body.width, "the TP4056 is wider than the holder"
 
 # the USB-C board on its pillars, mouth against the front wall
 usbc_x = front_inside - usbc.length / 2
@@ -168,6 +181,11 @@ assert buzzer_x + buzzer.diameter / 2 < pico_x - pico.length / 2 - 1.3, "the buz
 sensor_x = usbc_x
 sensor_y = (-b / 2 + usbc_y - usbc.width / 2) / 2  # between the -y side and the USB-C board
 sensor_z = wall
+
+# the diode above the MT3608, under the lid
+diode_x = mt_x
+diode_y = (holder_edge + pico_y) / 2  # between the holder and the Pico
+diode_z = h - 0.5 - diode.body_d / 2  # its axis
 
 channel = (
     cq.Workplane("XY", origin=(0, 0, wall))
