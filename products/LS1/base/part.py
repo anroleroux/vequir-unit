@@ -15,8 +15,9 @@ four corner pillars on the floor, and in front of that the horizontal USB-C
 breakout stands on low supports with its front in a pocket in the front
 wall, 0.4 mm from the outside, held down by a clamp (LS1/usb_clamp) screwed
 to two posts over its receptacle. The front wall has a USB-C plug hole and
-two rows of vent slots; the TSD-1166 LED push button goes through a round
-hole in the back wall. The box is sized from the parts, so it follows a
+round vent holes; the TSD-1166 LED push button goes through a round hole in
+the back wall. Each end wall has two countersunk holes near its ends for
+the M1.2 screws that fasten the lid's blocks from outside. The box is sized from the parts, so it follows a
 change to any of them.
 
 Assumptions where the description is silent:
@@ -36,7 +37,7 @@ Assumptions where the description is silent:
   stick are centred on the same x, the Pico's +x posts 1 mm behind the
   front zone (which starts 1 mm in front of the holder);
 - the MT3608 stands on the floor, centred on the Pico's x; each of its two
-  posts is 12 mm tall and holds one end of the board in a vertical slot
+  posts is 11.5 mm tall (clear of D1 above) and holds one end of the board in a vertical slot
   (the board's 1.6 mm plus 0.2 mm), 1.2 mm deep, with 1.5 mm walls, clear of
   the corner holes; the board slides in from the top;
 - the wiring board's underside is at mid-height inside the box (the upper
@@ -59,10 +60,18 @@ Assumptions where the description is silent:
   pillar is a 1.5 mm ledge under 1.9 mm of the board's corner, with 1.2 mm
   walls round the corner outside its edges, 0.8 mm above its top, 0.1 mm
   clear of its edges; it is pressed in (or glued);
-- the vents are vertical slots 1.6 mm wide at 3.2 mm pitch across the front
-  wall, 2 mm in from its sides, in two rows: between the USB-C pocket and
-  the wiring board, and between the wiring board and the lid's lip, each
-  1 mm clear of them;
+- D1 (1N5822) is soldered by its anode lead through the MT3608's VOUT+
+  hole (the board's upper corner at its VOUT end), lying on the board's
+  parts side with its body out past the board's end, its cathode lead free
+  for the VSYS wire; its 1.3 mm lead needs the hole opened to 1.4 mm;
+- the vents are round holes, 2.4 mm across at 3.6 mm pitch, across the
+  front wall 2 mm in from its sides, in two bands: between the USB-C pocket
+  and the wiring board, and from the wiring board up to 2 mm under the rim,
+  1 mm clear of the board and of the lid's blocks;
+- the lid's four blocks (in the lid) are 4 mm along x, 5 mm across and 6 mm
+  deep, 0.2 mm inside the end walls; each end wall has two M1.2 clearance
+  holes (1.3 mm) through it in line with the blocks' centres, countersunk
+  on the outside for flush M1.2 x 6 heads;
 - the button's hole is its 10 mm button plus 0.3 mm all round, its axis
   15 mm up and 8 mm in from the +y side; its body rests against the inside
   of the back wall, so its button stands 2 mm proud;
@@ -102,7 +111,7 @@ mt_behind = 2.1  # the MT3608's back face, behind the Pico's
 slot_clearance = 0.2  # round the MT3608's board in its slots
 slot_engagement = 1.2  # of each board end in its slot
 slot_wall = 1.5
-slot_post_h = 12.0  # the MT3608's posts
+slot_post_h = 11.5  # the MT3608's posts, clear of D1
 button_clearance = 0.3  # all round the button in its hole
 button_z = 15.0  # the button's axis
 button_in = 2.0  # its body, in from the +y side
@@ -126,11 +135,16 @@ corner_under = 2.0  # each ledge, under the board's corner
 corner_wall = 1.2  # the walls round its corners
 corner_above = 0.8  # above its top
 corner_clearance = 0.1  # round its edges
-vent_w = 1.6  # vent slot width
-vent_pitch = 3.2
+vent_d = 2.4  # round vent holes
+vent_pitch = 3.6
 vent_in = 2.0  # from the wall's sides
-vent_gap = 1.0  # above and below each row
-lip_depth = 6.0  # the lid's lips reach this far below the rim
+vent_gap = 1.0  # from the parts and the blocks round them
+vent_top = 2.0  # under the rim
+lid_block_t = 4.0  # the lid's blocks: along x
+lid_block_w = 5.0  # across, from the skirt in
+lid_block_depth = 6.0  # under the plate
+lid_clearance = 0.2  # between each block and its end wall
+lid_hole = 1.3  # M1.2 clearance, through the end walls
 
 
 # the screw heads' rise above a board: a 90 degree head sits down in a plain
@@ -240,16 +254,37 @@ stick_y = b / 2 - stick_back_in  # its underside's plane
 stick_holes = [(stick_x + x, stick_z - stick.cap_y) for x in stick.hole_xs]  # (x, z), turned
 assert stick_x + stick.length / 2 < wb_x - wb.width / 2, "the LED stick runs into the wiring board"
 
+# D1 on the MT3608's VOUT+ pad (the board turned a quarter turn about x:
+# its local y up, its parts side toward -y)
+d1_x = mt_x - boost.hole_x  # the VOUT+ hole, at the board's -x (VOUT) end
+d1_y = mt_y - boost.pcb_t  # the parts side
+d1_z = mt_z + boost.hole_y
+
+# the lid's screws: through each end wall into the lid's blocks
+lid_screws = [(sx * l / 2, sy * (b / 2 - lid_block_w / 2), h - lid_block_depth / 2)
+              for sx in (-1, 1) for sy in (-1, 1)]
+lid_screw_head = head_out(lid_hole, board_screw)  # the countersink's depth for a flush head
+
 # the button through the back wall
 button_y = b / 2 - button_in - button.body / 2
 button_hole = button.cap_d + 2 * button_clearance
 button_x = back_inside + button.body_top  # its leg tips, turned to point +x
 
-# the vents: two rows of slots across the front wall
-vent_rows = [(pocket_top + vent_gap, wb_z - vent_gap),
-             (wb_z + wb.thickness + vent_gap, h - lip_depth - vent_gap)]
-vent_n = math.floor((b - 2 * vent_in - vent_w) / vent_pitch) + 1
+# the vents: round holes in two bands across the front wall, clear of the blocks
+vent_bands = [(pocket_top + vent_gap, wb_z - vent_gap),
+              (wb_z + wb.thickness + vent_gap, h - vent_top)]
+vent_n = math.floor((b - 2 * vent_in - vent_d) / vent_pitch) + 1
 vent_ys = [(i - (vent_n - 1) / 2) * vent_pitch for i in range(vent_n)]
+vent_holes = []
+for z0, z1 in vent_bands:
+    rows = math.floor((z1 - z0 - vent_d) / vent_pitch) + 1
+    for j in range(max(rows, 0)):
+        z = (z0 + z1) / 2 + (j - (rows - 1) / 2) * vent_pitch
+        for y in vent_ys:
+            by_block = (abs(y) + vent_d / 2 > b / 2 - lid_block_w - vent_gap
+                        and z + vent_d / 2 > h - lid_block_depth - vent_gap)
+            if not by_block:
+                vent_holes.append((y, z))
 
 channel = (
     cq.Workplane("XY", origin=(0, 0, wall))
@@ -267,18 +302,31 @@ usbc_hole = (
     .slot2D(usbc_w + 2 * plug_clearance, usbc_h + 2 * plug_clearance)
     .extrude(usb_skin)
 )
-vents = None
-for z0, z1 in vent_rows:
-    row = (cq.Workplane("YZ", origin=(front_inside, 0, (z0 + z1) / 2))
-           .pushPoints([(y, 0) for y in vent_ys])
-           .slot2D(z1 - z0, vent_w, angle=90).extrude(wall))
-    vents = row if vents is None else vents.union(row)
+vents = (cq.Workplane("YZ", origin=(front_inside, 0, 0)).pushPoints(vent_holes)
+         .circle(vent_d / 2).extrude(wall))
+# the lid's screw holes, countersunk on the outside
+lid_holes = None
+for x, y, z in lid_screws:
+    side = 1 if x > 0 else -1
+    sink_r = board_screw.head_diameter / 2 + 0.05
+    cone_h = sink_r - lid_hole / 2
+    edge = board_screw.edge_height
+    # "YZ" extrudes toward +x: start each cut at its -x face
+    hole = (cq.Workplane("YZ", origin=(x - wall if side > 0 else x, y, z))
+            .circle(lid_hole / 2).extrude(wall))
+    bore = (cq.Workplane("YZ", origin=(x - edge if side > 0 else x, y, z))
+            .circle(sink_r).extrude(edge))
+    cone = cq.Solid.makeCone(lid_hole / 2, sink_r, cone_h,
+                             cq.Vector(x - side * (edge + cone_h), y, z),
+                             cq.Vector(side, 0, 0))
+    cut = hole.union(bore).union(cq.Workplane("XY").add(cone))
+    lid_holes = cut if lid_holes is None else lid_holes.union(cut)
 button_bore = (
     cq.Workplane("YZ", origin=(-l / 2, button_y, button_z))
     .circle(button_hole / 2)
     .extrude(wall)
 )
-result = result.cut(pocket).cut(usbc_hole).cut(vents).cut(button_bore)
+result = result.cut(pocket).cut(usbc_hole).cut(vents).cut(button_bore).cut(lid_holes)
 
 # the USB-C board's supports, and the clamp's posts with their tap holes
 supports = (
@@ -352,10 +400,13 @@ regions = {
         and abs(f.Center().y - usbc_y) < usbc_w and abs(f.Center().z - usbc_axis) < usbc_h),
     "usbc_pocket": result.faces("%PLANE").filter(  # its back face, 0.4 mm from the outside
         lambda f: f.normalAt().x < -0.999 and abs(f.Center().x - usbc_front) < 1e-6),
-    "vents": result.faces("%PLANE").filter(  # the vent slots' flat sides
-        lambda f: abs(abs(f.normalAt().y) - 1) < 1e-6 and front_inside + 1e-6 < f.Center().x < l / 2
-        and f.Center().z > pocket_top),
-    "button_hole": result.faces("%CYLINDER").filter(lambda f: f.Center().x < -l / 2 + wall),
+    "vents": result.faces("%CYLINDER").filter(  # the round vent holes
+        lambda f: abs(f.BoundingBox().ylen - vent_d) < 1e-3 and abs(f.BoundingBox().xlen - wall) < 1e-3
+        and f.Center().x > 0),
+    "lid_screw_holes": result.faces("%CYLINDER").filter(  # through the end walls
+        lambda f: abs(f.BoundingBox().ylen - lid_hole) < 1e-3),
+    "button_hole": result.faces("%CYLINDER").filter(
+        lambda f: f.Center().x < -l / 2 + wall and abs(f.BoundingBox().ylen - button_hole) < 1e-3),
     "pico_post_faces": result.faces("%PLANE").filter(  # where the Pico's underside rests
         lambda f: f.normalAt().y > 0.999 and abs(f.Center().y - pico_y) < 1e-6),
     "pico_tap_holes": result.faces("%CYLINDER").filter(

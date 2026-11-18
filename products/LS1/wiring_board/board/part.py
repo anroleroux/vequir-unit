@@ -2,8 +2,8 @@
 
 A perfboard cut to 14 x 20 holes on the 0.1 in (2.54 mm) grid, holding the
 LS1's small through-hole parts: the buzzer (BZ1) and the DS18B20 (U5) in
-the first rows, then D1, D2 and D3 (1N5822) lying along x in a column at the
--x end, R1, R2 and R3 (1/4 W) beside them, Q1 (BC337) below the resistors,
+the first rows, then D2 and D3 (1N5822) lying along x in a column at the
+-x end (D1 is soldered on the MT3608 instead), R1, R2 and R3 (1/4 W) beside them, Q1 (BC337) below the resistors,
 the battery divider (R4, R5 and C1) and the LED stick's data resistor (R6). Its layout (each part's centre and its holes) is here,
 for the wiring board's assembly to place the parts on.
 
@@ -13,8 +13,8 @@ Assumptions where the description is silent:
 - the diodes span six pitches (0.6 in) and the resistors four (0.4 in);
   rows: the buzzer's pins on row 4, columns 2 and 5 (its body centred
   between them, so its 7 mm pins reach the 7.62 mm holes, drilled to 1.3 mm),
-  the DS18B20's legs on row 3, columns 9 to 11; the diodes on rows 8, 11
-  and 14, R1 to R3 on rows 8, 10 and 12, the transistor's legs on row 14,
+  the DS18B20's legs on row 3, columns 9 to 11; the diodes on rows 11
+  and 14 (row 8 left free where D1 was), R1 to R3 on rows 8, 10 and 12, the transistor's legs on row 14,
   columns 9 to 11; R4 and R5 on rows 16 and 18 beside them, R6 on row 17
   under the diodes, C1 (0.2 in) on row 19, columns 4 and 6; the corners
   are kept clear;
@@ -45,7 +45,7 @@ def at(col, row):
 # each part: (centre column, row) and the columns its leads go through
 layout = {
     "BZ1": ((3.5, 4), (2, 5)), "U5": ((10, 3), (9, 10, 11)),
-    "D1": ((3, 8), (0, 6)), "D2": ((3, 11), (0, 6)), "D3": ((3, 14), (0, 6)),
+    "D2": ((3, 11), (0, 6)), "D3": ((3, 14), (0, 6)),
     "R1": ((10, 8), (8, 12)), "R2": ((10, 10), (8, 12)), "R3": ((10, 12), (8, 12)),
     "Q1": ((10, 14), (9, 10, 11)),
     "R4": ((10, 16), (8, 12)), "R5": ((10, 18), (8, 12)), "R6": ((3, 17), (1, 5)),

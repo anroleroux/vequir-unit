@@ -1,6 +1,6 @@
 {
  "title": "Wiring",
- "note": "One USB-C port for charging and data: VBUS charges the cell through the TP4056, and D+ and D- go to the Pico's USB test pads. Two 1N5822 diodes share the load: the MT3608 runs from whichever of VBUS and the cell is higher, so with USB in the cell only charges. A third 1N5822 joins the MT3608 (set to about 5.2 V) to the Pico's VSYS, so nothing can push power back into a computer. D1 to D3, the resistors, C1 and Q1 sit on the wiring board.",
+ "note": "One USB-C port for charging and data: VBUS charges the cell through the TP4056, and D+ and D- go to the Pico's USB test pads. Two 1N5822 diodes share the load: the MT3608 runs from whichever of VBUS and the cell is higher, so with USB in the cell only charges. A third 1N5822 joins the MT3608 (set to about 5.2 V) to the Pico's VSYS, so nothing can push power back into a computer. D2, D3, the resistors, C1, Q1, the buzzer and the DS18B20 sit on the wiring board; D1 is soldered onto the MT3608.",
  "groups": [
   {
    "label": "Load sharing (diode OR)",
@@ -155,7 +155,7 @@
      "K"
     ]
    },
-   "note": "Joins the MT3608 to VSYS, on the wiring board; the Pico's own diode joins VBUS to VSYS, so whichever is higher runs it, and nothing flows back into the USB port."
+   "note": "Joins the MT3608 to VSYS, soldered by its anode lead into the MT3608's VOUT+ hole (open it to 1.4 mm); the VSYS wire goes on its cathode lead. The Pico's own diode joins VBUS to VSYS, so whichever is higher runs it, and nothing flows back into the USB port."
   },
   {
    "ref": "U1",

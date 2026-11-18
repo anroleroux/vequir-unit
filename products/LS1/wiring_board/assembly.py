@@ -1,6 +1,6 @@
 """LS1 wiring board, assembled.
 
-The perfboard with its parts in place, from its layout: D1, D2 and D3
+The perfboard with its parts in place, from its layout: D2 and D3
 (1N5822, formed for 0.6 in) lying along x, cathodes at +x; R1 to R6 (1/4 W,
 formed for 0.4 in); Q1 (BC337) standing on its legs, its flat toward -y;
 C1 (100 nF MLCC) standing on its leads; at the front, the buzzer (BZ1)
