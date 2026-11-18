@@ -28,7 +28,7 @@
      "CC2"
     ]
    },
-   "note": "The only USB port on the unit. CC1 and CC2 each have a 5.1 k resistor to GND on the board, so a USB-C charger supplies 5 V; SBU1 and SBU2 are not used."
+   "note": "The only USB port on the unit. CC1 and CC2 each have a 5.1 k resistor to GND on the board, so a USB-C charger supplies 5 V; SBU1 and SBU2 are not used. It sits in a pocket in the front wall, its mouth 0.4 mm from the outside, held down by the USB clamp."
   },
   {
    "ref": "U2",
@@ -48,7 +48,7 @@
      "OUT-"
     ]
    },
-   "note": "1 A single-cell charger with protection (DW01 + 8205A), on the holder. Its own USB-C port is not used: power comes in on IN+ and IN-. IN- and OUT- are joined on the board."
+   "note": "1 A single-cell charger with protection (DW01 + 8205A), on the floor behind the USB-C board, held at its corners. Its own USB-C port is not used: power comes in on IN+ and IN-. IN- and OUT- are joined on the board."
   },
   {
    "ref": "U3",
@@ -83,7 +83,7 @@
      "-"
     ]
    },
-   "note": "One 18650 cell in its holder, glued to the floor."
+   "note": "One 18650 cell in its holder, glued to the floor, the BMS strip on top."
   },
   {
    "ref": "D3",
@@ -280,7 +280,7 @@
      "-"
     ]
    },
-   "note": "Active 5 V buzzer, 30 mA, beside the button."
+   "note": "Active 5 V buzzer, 30 mA, on the wiring board at the front."
   },
   {
    "ref": "U5",
@@ -295,7 +295,7 @@
      "GND"
     ]
    },
-   "note": "Measures the air inside the box; one-wire on GP6."
+   "note": "On the wiring board at the front, behind the vents: it measures the air inside the box; one-wire on GP6."
   },
   {
    "ref": "R1",
