@@ -41,11 +41,20 @@ Assumptions where the description is silent:
   (the board's 1.6 mm plus 0.2 mm), 1.2 mm deep, with 1.5 mm walls, clear of
   the corner holes; the board slides in from the top;
 - the wiring board's underside is at mid-height inside the box (the upper
-  half), its 14 columns across the breadth (turned a quarter turn about z),
-  centred across it, its front edge 0.5 mm behind the front wall and its
-  back edge at least 0.5 mm into the front zone; it stands on four 4 mm
-  square pillars from the floor, one under each drilled corner hole, each
-  with an M1.2 tap hole (0.95 mm) 4.5 mm deep;
+  half), its columns across the breadth (turned a quarter turn about z),
+  centred in the front zone both ways; it stands on four 4 mm square
+  pillars from the floor, one under each drilled corner hole, each with an
+  M1.2 tap hole (0.95 mm) 4.5 mm deep;
+- D2 and D3 (1N5822) lie on the floor across the box, end to end, 1 mm
+  behind the TP4056's corner walls, upside down with their leads bent up
+  for the wires: D3 at -y, D2 at +y, anodes outward, cathodes 1 mm apart in
+  the middle (they are joined, to the MT3608's VIN+); the front zone grows
+  by a diode and a gap to take them;
+- R6 (inline, its leads cut to 3 mm) is in line with the LED stick, 0.5 mm
+  past its -x end, at its board's mid-plane, on the data wire into the
+  stick's DIN pad at that end; R2 (inline) carries on from the button's
+  LED+ leg (taken as the middle leg on the +y side), 0.5 mm past its tip,
+  along x;
 - the USB-C breakout's underside is 2 mm above the floor; its front 2.6 mm
   sits in a pocket in the front wall (0.2 mm clearance round the board and
   over the receptacle), so its mouth is 0.4 mm from the wall's outside, and
@@ -91,6 +100,8 @@ button = load_library("electronics/tsd_1166_button")  # axis along z, legs on z 
 pico = load_library("electronics/pico_2w")  # USB at -x, underside on z = 0
 stick = load_library("electronics/ws2812_stick_8")  # on the lid's +y skirt
 wiring = load_part("../wiring_board")  # the perfboard and its parts, standing on z = 0
+diode = load_library("electronics/diode_1n5822")  # formed: body on z = 0, leads below, anode at -x
+inline = load_library("electronics/resistor_025w_inline")  # along x, centred
 screw = load_library("hardware/m1_2x3_countersunk")  # for the Pico and the stick
 board_screw = load_library("hardware/m1_2x6_countersunk")  # for the wiring board and the clamp
 
@@ -167,11 +178,11 @@ holder_length, holder_breadth = hb.xlen, hb.ylen
 
 # the front zone, in front of the holder: the wiring board above; below it,
 # from the front wall back, the USB-C board (partly in the wall), the TP4056
-# and its corner walls
+# and its corner walls, and D2 and D3 across the box
 wb = wiring.board  # the perfboard: length (across the breadth), width (along x)
 board_zone = wb.width + 2 * board_wall_gap
 usb_zone = (usbc.length - (wall - usb_skin) + gap + charger.length + charger.usb_proud
-            + corner_wall + gap)
+            + corner_wall + gap + diode.body_d + gap)
 front_zone_length = max(board_zone, usb_zone)
 
 b = holder_breadth + holder_edge_in  # breadth, outside
@@ -192,7 +203,7 @@ bms_y = holder_dy  # the cell's axis
 bms_z = holder_dz + holder.axis_height + holder.cell.diameter / 2
 
 # the wiring board, raised, turned so its columns run across
-wb_x = front_inside - board_wall_gap - wb.width / 2
+wb_x = (front_zone + front_inside) / 2  # centred in the front zone
 wb_y = 0.0
 wb_z = wall + (h - wall) / 2  # its underside: mid-height inside
 wb_holes = [(wb_x - y, wb_y + x) for x, y in wb.mount_holes]  # a quarter turn about z
@@ -225,7 +236,14 @@ charger_y = 0.0
 charger_z = wall + ledge
 charger_corners = [(charger_x + sx * charger.length / 2, charger_y + sy * charger.width / 2)
                    for sx in (-1, 1) for sy in (-1, 1)]
-assert charger_x - charger.length / 2 - corner_wall >= front_zone - 1e-6, "the TP4056 runs into the holder"
+
+# D2 and D3 behind it, across the box, upside down (leads up), cathodes in the middle
+diodes_x = charger_x - charger.length / 2 - corner_wall - gap - diode.body_d / 2
+diode_y = diode.pitch / 2 + diode.lead_d / 2 + gap / 2  # each one's centre, off the middle
+d3_y, d2_y = -diode_y, diode_y
+diodes_z = wall + diode.body_d  # its own z = 0 (the "board") turned to the top of its body
+assert diodes_x - diode.body_d / 2 >= front_zone - 1e-6, "D2 and D3 run into the holder"
+assert diode_y + diode.pitch / 2 + diode.lead_d / 2 < b / 2, "D2 and D3 are wider than the box"
 
 # the Pico on its side, parts facing +y, and its posts
 pico_mounts = [(sx * pico.mount_x / 2, sy * pico.mount_y / 2) for sx in (-1, 1) for sy in (-1, 1)]
@@ -269,6 +287,16 @@ lid_screw_head = head_out(lid_hole, board_screw)  # the countersink's depth for 
 button_y = b / 2 - button_in - button.body / 2
 button_hole = button.cap_d + 2 * button_clearance
 button_x = back_inside + button.body_top  # its leg tips, turned to point +x
+
+# R6 inline at the LED stick's -x end, R2 inline on the button's LED+ leg
+r6_x = stick_x - stick.length / 2 - 0.5 - inline.length / 2
+r6_y = stick_y + stick.pcb_t / 2  # the stick's board, mid-plane
+r6_z = stick_z
+r2_x = button_x + 0.5 + inline.length / 2
+r2_y = button_y + button.leg_rows / 2
+r2_z = button_z
+assert r2_x + inline.length / 2 < pico_x - pico.length / 2 - pico.usb_overhang - 0.5, \
+    "R2 runs into the Pico"
 
 # the vents: round holes in two bands across the front wall, clear of the blocks
 vent_bands = [(pocket_top + vent_gap, wb_z - vent_gap),

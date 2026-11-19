@@ -1,11 +1,10 @@
 """LS1 wiring board, assembled.
 
-The perfboard with its parts in place, from its layout: D2 and D3
-(1N5822, formed for 0.6 in) lying along x, cathodes at +x; R1 to R6 (1/4 W,
-formed for 0.4 in); Q1 (BC337) standing on its legs, its flat toward -y;
-C1 (100 nF MLCC) standing on its leads; at the front, the buzzer (BZ1)
-sitting on the board on its pins and the DS18B20 (U5) standing on its legs,
-its flat toward -y (the board's front edge). The parts come from vequir-standard's library.
+The perfboard with its parts in place, from its layout: the buzzer (BZ1)
+sitting on the board on its pins; the DS18B20 (U5) and Q1 (BC337) standing
+on their legs, their flats toward -y (the board's front edge); R1, R3, R4
+and R5 (1/4 W, formed for 0.4 in) lying on it; C1 (100 nF MLCC) standing on
+its leads. The parts come from vequir-standard's library.
 
 Assumptions where the description is silent:
 - every part stands on the board's top face; the leads go through and are
@@ -15,7 +14,6 @@ Assumptions where the description is silent:
 import cadquery as cq
 
 board = load_part("board")
-diode = load_library("electronics/diode_1n5822")
 resistor = load_library("electronics/resistor_025w")
 npn = load_library("electronics/npn_bc337")
 capacitor = load_library("electronics/capacitor_mlcc")
@@ -23,8 +21,7 @@ buzzer = load_library("electronics/buzzer_12x9")  # pins' tips on z = 0
 sensor = load_library("electronics/ds18b20")  # formed: the board's top on z = 0
 
 top = board.thickness
-shapes = {"D": (diode.result, cq.Color(0.10, 0.10, 0.10)),
-          "R": (resistor.result, cq.Color(0.80, 0.70, 0.50)),
+shapes = {"R": (resistor.result, cq.Color(0.80, 0.70, 0.50)),
           "Q": (npn.result, cq.Color(0.10, 0.10, 0.10)),
           "C": (capacitor.result, cq.Color(0.25, 0.45, 0.75)),
           "B": (buzzer.result, cq.Color(0.10, 0.10, 0.10)),

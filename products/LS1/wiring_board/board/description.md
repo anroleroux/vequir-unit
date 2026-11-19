@@ -1,8 +1,7 @@
-A piece of perfboard (stripless, 0.1 in grid) cut to 14 by 20 holes, for
-the LS1's small parts: the buzzer and the DS18B20 temperature sensor at its
-front, then two 1N5822 diodes (the load-sharing pair) lying in a column along one
-end, the resistors beside them, the BC337 transistor below the resistors,
-the battery voltage divider (two resistors and a capacitor) and the LED
-stick's data resistor. The holes for the diodes' thick leads are drilled out, and the
-four corner holes are drilled out for M1.2 screws that fix the board to
-pillars in the base.
+A piece of perfboard (stripless, 0.1 in grid) cut as small as its parts
+allow, 12 by 9 holes, for the LS1's small parts: the buzzer at one front
+corner, the DS18B20 and the BC337 transistor along the front edge beside it,
+three resistors in a column behind those, and a resistor and the battery
+divider's capacitor behind the buzzer. The holes for the buzzer's pins are
+drilled out, and the four corner holes are drilled out for M1.2 screws that
+fix the board to pillars in the base.

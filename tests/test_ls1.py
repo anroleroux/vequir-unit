@@ -65,7 +65,7 @@ def test_the_ls1_assembly_places_everything_without_interference(tmp_path):
                      "tp4056_charger", "wiring_board", "usb_clamp", "lid"} | {f"pico_screw_{n}" for n in range(1, 5)} \
         | {f"stick_screw_{n}" for n in range(1, 3)} | {f"board_screw_{n}" for n in range(1, 5)} \
         | {f"clamp_screw_{n}" for n in range(1, 3)} | {f"lid_screw_{n}" for n in range(1, 5)} \
-        | {"d1_1n5822"}
+        | {"d1_1n5822", "d2_1n5822", "d3_1n5822", "r2_inline", "r6_inline"}
     touching = {(c["a"].split("/")[-1], c["b"].split("/")[-1]) for c in summary["contacts"]}
     assert ("ws2812_stick_8", "lid") in touching  # the stick against the skirt
     assert ("base", "tsd_1166_button") in touching  # the button body against the back wall
@@ -94,15 +94,14 @@ def test_the_ls1_schematic_names_only_real_pins_and_its_modelled_parts():
 
 
 def test_the_wiring_board_holds_its_parts_clear_of_each_other(tmp_path):
-    """The buzzer, the DS18B20, three diodes, six resistors, the capacitor
-    and the transistor, every lead through its hole: nothing overlaps."""
+    """The buzzer, the DS18B20, four resistors, the capacitor and the
+    transistor, every lead through its hole: nothing overlaps; the board as
+    small as they allow."""
     summary = _summary(build_part(LS1 / "wiring_board" / "assembly.py", tmp_path / "wb"))
     assert summary["interference"] == []
     names = sorted(c["name"].split("/")[-1] for c in summary["components"])
-    assert names == ["BZ1", "C1", "D2", "D3", "Q1", "R1", "R2", "R3", "R4", "R5", "R6",
-                     "U5", "board"]
+    assert names == ["BZ1", "C1", "Q1", "R1", "R3", "R4", "R5", "U5", "board"]
     board = _summary(build_part(LS1 / "wiring_board" / "board" / "part.py", tmp_path / "b"))
-    assert board["bounding_box"]["size"] == pytest.approx([35.56, 50.8, 1.6])
-    assert board["regions"]["diode_holes"]["count"] == 4  # D2 and D3; D1 is on the MT3608
+    assert board["bounding_box"]["size"] == pytest.approx([30.48, 22.86, 1.6])
     assert board["regions"]["mount_holes"]["count"] == 4
     assert board["regions"]["buzzer_holes"]["count"] == 2

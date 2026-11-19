@@ -9,8 +9,10 @@ its side in two slotted posts. In front of the holder, on the floor, the
 TP4056 charger sits in four corner pillars, and in front of it the
 horizontal USB-C breakout stands on low supports with its front in the
 front wall's pocket, held down by the USB clamp (LS1/usb_clamp) and two
-M1.2 x 6 countersunk screws. D1 (1N5822) is soldered by its anode lead into
-the MT3608's VOUT+ hole. Above them, in the upper half, the wiring
+M1.2 x 6 countersunk screws. D2 and D3 (1N5822) lie across the floor
+behind the TP4056, leads up for the wires, and D1 is soldered by its anode
+lead into the MT3608's VOUT+ hole. R6 is soldered inline at the LED stick's
+data input, and R2 on the button's LED+ leg. Above them, in the upper half, the wiring
 board (LS1/wiring_board: the buzzer, the DS18B20, the diodes, resistors,
 capacitor and transistor on a perfboard) is screwed to four tall pillars
 with M1.2 x 6 countersunk screws. The TSD-1166 LED push button goes through
@@ -35,6 +37,10 @@ Assumptions where the description is silent:
   its body out past the board's VOUT end (-x), its cathode lead free for the
   VSYS wire: the formed diode turned half a turn about (0, 1, -1), which takes
   its x to -x, its y to -z and its z (away from the board) to -y;
+- D3 and D2 are the formed diode upside down, across the box: D3 turned half
+  a turn about (1, 1, 0) (its x to +y, its z to -z), D2 about (1, -1, 0)
+  (its x to -y), so both anodes point outward and the cathodes meet;
+- R6 and R2 lie along x as they are (the inline resistor is modelled along x);
 - the stick and the Pico are turned a quarter turn about x so their parts
   face +y (their -y edges at the top); the MT3608 the other way, its parts
   facing -y toward the holder, its VIN end at +x;
@@ -56,6 +62,7 @@ stick = load_library("electronics/ws2812_stick_8")
 pico = load_library("electronics/pico_2w")
 clamp = load_part("usb_clamp")  # its underside on z = 0
 diode = load_library("electronics/diode_1n5822")  # formed: the board's top on z = 0, anode at -x
+inline = load_library("electronics/resistor_025w_inline")  # along x, centred
 screw = load_library("hardware/m1_2x3_countersunk")  # standing up: tip on z = 0
 
 board_green = cq.Color(0.15, 0.45, 0.30)
@@ -113,6 +120,17 @@ for i, (x, z) in enumerate(base.stick_holes, start=1):
 for i, (x, y) in enumerate(base.wb_holes, start=1):
     result.add(board_screw.result, name=f"board_screw_{i}",
                loc=at(x, y, base.wb_screw_top - board_screw.length), color=steel)
+
+# D2 and D3 across the floor behind the TP4056
+result.add(diode.result, name="d3_1n5822",
+           loc=at(base.diodes_x, base.d3_y, base.diodes_z, cq.Vector(1, 1, 0), 180), color=black)
+result.add(diode.result, name="d2_1n5822",
+           loc=at(base.diodes_x, base.d2_y, base.diodes_z, cq.Vector(1, -1, 0), 180), color=black)
+
+# R6 and R2, soldered inline
+inline_tan = cq.Color(0.80, 0.70, 0.50)
+result.add(inline.result, name="r6_inline", loc=at(base.r6_x, base.r6_y, base.r6_z), color=inline_tan)
+result.add(inline.result, name="r2_inline", loc=at(base.r2_x, base.r2_y, base.r2_z), color=inline_tan)
 
 # D1: its anode lead (at its own x = -pitch / 2) in the VOUT+ hole
 result.add(diode.result, name="d1_1n5822",
