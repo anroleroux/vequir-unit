@@ -1,0 +1,107 @@
+"""LS1, the single-cell unit: its base, lid and assembled model.
+
+The holder comes from vequir-power, the boards, button, buzzer, sensor,
+LED stick and screws from
+vequir-standard; ``libraries.txt`` expects both beside this repository.
+"""
+
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+import pytest
+
+from cad.part import build_part
+
+LS1 = Path(__file__).resolve().parents[1] / "products" / "LS1"
+
+
+def _summary(result):
+    assert result.ok, result.error
+    return json.loads(result.files["summary"].read_text())
+
+
+def test_the_ls1_base_has_its_usb_c_and_button_holes(tmp_path):
+    base = _summary(build_part(LS1 / "base" / "part.py", tmp_path / "base"))
+    assert base["bounding_box"]["size"][2] == pytest.approx(30.0)
+    assert base["regions"]["usbc_hole"]["count"] == 4
+    assert base["regions"]["button_hole"]["count"] == 1
+    assert base["regions"]["pico_tap_holes"]["count"] == 4  # the Pico's four posts
+    assert base["regions"]["mt_slots"]["count"] == 2  # the MT3608's two slotted posts
+    assert base["regions"]["usbc_pocket"]["count"] == 1  # the USB-C board's inset
+    assert base["regions"]["charger_ledges"]["count"] == 4  # the TP4056's corners
+    assert base["regions"]["long_tap_holes"]["count"] == 6  # wiring board 4, clamp 2
+    assert base["regions"]["vents"]["count"] >= 20  # round holes
+    assert base["regions"]["lid_screw_holes"]["count"] == 4  # two in each end wall
+
+
+def test_the_ls1_lid_has_a_window_for_each_led(tmp_path):
+    lid = _summary(build_part(LS1 / "lid" / "part.py", tmp_path / "lid"))
+    assert lid["regions"]["led_windows"]["count"] == 8 * 4  # four sides each
+    assert lid["regions"]["block_bottoms"]["count"] == 4  # a block at each end of each end wall
+    assert lid["regions"]["block_tap_holes"]["count"] == 4
+    assert lid["regions"]["stick_pillars"]["count"] == 2
+    assert lid["regions"]["tap_holes"]["count"] == 2
+
+
+def test_the_ls1_assembly_places_everything_without_interference(tmp_path):
+    """The only overlaps are the M1.2 screws forming their threads: four in
+    the base's Pico posts, four in its wiring board pillars, two in its clamp
+    posts, two in the lid's stick pillars and four in its corner blocks; and
+    D1's 1.3 mm lead in the MT3608's 1.2 mm VOUT+ hole (open it to 1.4 mm)."""
+    summary = _summary(build_part(LS1 / "assembly.py", tmp_path / "out"))
+    pairs = sorted((i["a"].split("/")[-1], i["b"].split("/")[-1]) for i in summary["interference"])
+    assert pairs == sorted([("base", f"pico_screw_{n}") for n in range(1, 5)]
+                           + [("base", f"board_screw_{n}") for n in range(1, 5)]
+                           + [("base", f"clamp_screw_{n}") for n in range(1, 3)]
+                           + [(f"stick_screw_{n}", "lid") for n in range(1, 3)]
+                           + [(f"lid_screw_{n}", "lid") for n in range(1, 5)]
+                           + [("mt3608_boost", "d1_1n5822")])  # its 1.3 mm lead in the 1.2 mm VOUT+ hole
+    assert all(i.get("thread") for i in summary["interference"])
+    names = {c["name"].split("/")[-1] for c in summary["components"]}
+    assert names == {"base", "single_18650_holder", "mt3608_boost", "bms_1s_3a",
+                     "usb_c_breakout", "tsd_1166_button", "ws2812_stick_8", "pico_2w",
+                     "tp4056_charger", "wiring_board", "usb_clamp", "lid"} | {f"pico_screw_{n}" for n in range(1, 5)} \
+        | {f"stick_screw_{n}" for n in range(1, 3)} | {f"board_screw_{n}" for n in range(1, 5)} \
+        | {f"clamp_screw_{n}" for n in range(1, 3)} | {f"lid_screw_{n}" for n in range(1, 5)} \
+        | {"d1_1n5822", "d2_1n5822", "d3_1n5822", "r2_inline", "r6_inline"}
+    touching = {(c["a"].split("/")[-1], c["b"].split("/")[-1]) for c in summary["contacts"]}
+    assert ("ws2812_stick_8", "lid") in touching  # the stick against the skirt
+    assert ("base", "tsd_1166_button") in touching  # the button body against the back wall
+    assert ("base", "pico_2w") in touching  # the Pico on its posts
+    assert ("base", "mt3608_boost") in touching  # the MT3608 in its slots
+    assert ("base", "tp4056_charger") in touching  # the charger on its corner ledges
+    assert ("usb_c_breakout", "usb_clamp") in touching  # the clamp pressing on the receptacle
+    assert ("base", "usb_clamp") in touching  # and screwed to its posts
+    comps = {c["name"].split("/")[-1]: c for c in summary["components"]}
+    front = comps["base"]["bounding_box_max"][0]
+    assert comps["usb_c_breakout"]["bounding_box_max"][0] == pytest.approx(front - 0.4)  # in the wall
+    inside = comps["base"]["bounding_box_max"][2] - 3.0  # the space above the floor
+    # the board's underside at mid-height: only the buzzer's pins hang lower, 3.9 mm
+    assert comps["wiring_board"]["bounding_box_min"][2] == pytest.approx(3.0 + inside / 2 - 3.9)
+
+
+def test_the_ls1_schematic_names_only_real_pins_and_its_modelled_parts():
+    """schematic.json passes the tool's checks, and every part it links names
+    an item the assembled model places."""
+    from cad.schematic import load
+    data = load(LS1 / "schematic.json")
+    script = "".join(p.read_text() for p in LS1.rglob("*.py"))
+    for comp in data["components"]:
+        if comp.get("item"):
+            assert f'"{comp["item"]}"' in script, comp["ref"]
+
+
+def test_the_wiring_board_holds_its_parts_clear_of_each_other(tmp_path):
+    """The buzzer, the DS18B20, four resistors, the capacitor and the
+    transistor, every lead through its hole: nothing overlaps; the board as
+    small as they allow."""
+    summary = _summary(build_part(LS1 / "wiring_board" / "assembly.py", tmp_path / "wb"))
+    assert summary["interference"] == []
+    names = sorted(c["name"].split("/")[-1] for c in summary["components"])
+    assert names == ["BZ1", "C1", "Q1", "R1", "R3", "R4", "R5", "U5", "board"]
+    board = _summary(build_part(LS1 / "wiring_board" / "board" / "part.py", tmp_path / "b"))
+    assert board["bounding_box"]["size"] == pytest.approx([30.48, 22.86, 1.6])
+    assert board["regions"]["mount_holes"]["count"] == 4
+    assert board["regions"]["buzzer_holes"]["count"] == 2
