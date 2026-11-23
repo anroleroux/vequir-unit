@@ -12,8 +12,9 @@ countersunk screws. Right behind it the wiring board (LS1/wiring_board: the
 buzzer, the DS18B20, the transistor, resistors and capacitor on a
 perfboard) stands up, its parts facing the front wall and the buzzer at the
 top, screwed to the base's two posts with M1.2 x 6 countersunk screws.
-Behind that the TP4056 charger lies across the box in four corner pillars,
-and D2 and D3 (1N5822) lie across the floor behind it, leads up for the
+Behind that the TP4056 charger stands across the box in four corner grips,
+its parts facing backwards, and behind it D2 and D3 (1N5822) lie across the
+box one above the other in the base's diode holder, leads bent for the
 wires; D1 is soldered by its anode lead into the MT3608's VOUT+ hole. R6 is
 soldered inline at the LED stick's data input, and R2 on the button's LED+
 leg. The TSD-1166 LED push button goes through
@@ -38,14 +39,16 @@ Assumptions where the description is silent:
   its body out past the board's VOUT end (-x), its cathode lead free for the
   VSYS wire: the formed diode turned half a turn about (0, 1, -1), which takes
   its x to -x, its y to -z and its z (away from the board) to -y;
-- D3 and D2 are the formed diode upside down, across the box: D3 turned half
-  a turn about (1, 1, 0) (its x to +y, its z to -z), D2 about (1, -1, 0)
-  (its x to -y), so both anodes point outward and the cathodes meet;
+- D3 and D2 lie across the box, cathodes toward +y: D3 below as formed (its
+  leads bent down), turned a quarter turn about z (its x to +y); D2 above,
+  upside down (its leads bent up), turned half a turn about (1, 1, 0) (its x
+  to +y, its z to -z);
 - R6 and R2 lie along x as they are (the inline resistor is modelled along x);
 - the wiring board is turned 120 degrees about (-1, 1, -1): its x to -y, its
   y to -z (row 0, the buzzer's, at the top), its parts' side to +x; its
   screws lie along x, heads toward +x;
-- the TP4056 is turned a quarter turn about z: its USB-C end to +y;
+- the TP4056 stands turned 120 degrees about (-1, -1, 1): its x (its USB-C
+  end) to +y, its y to -z, its z (its parts' side) to -x;
 - the stick and the Pico are turned a quarter turn about x so their parts
   face +y (their -y edges at the top); the MT3608 the other way, its parts
   facing -y toward the holder, its VIN end at +x;
@@ -90,7 +93,7 @@ result = (
          loc=at(base.holder_dx, base.holder_dy, base.holder_dz))
     .add(bms.result, name="bms_1s_3a", loc=at(base.bms_x, base.bms_y, base.bms_z), color=board_green)
     .add(charger.result, name="tp4056_charger",
-         loc=at(base.charger_x, base.charger_y, base.charger_z, cq.Vector(0, 0, 1), 90),
+         loc=at(base.charger_x, base.charger_y, base.charger_z, cq.Vector(-1, -1, 1), 120),
          color=board_blue)
     # standing up, its parts facing +x, row 0 at the top
     .add(wiring.result, name="wiring_board",
@@ -127,11 +130,11 @@ for i, (y, z) in enumerate(base.wb_holes, start=1):  # along x, heads toward +x
     result.add(board_screw.result, name=f"board_screw_{i}",
                loc=at(base.wb_screw_top - board_screw.length, y, z, y_axis, 90), color=steel)
 
-# D2 and D3 across the floor behind the TP4056
+# D3 and D2 in the diode holder, one above the other
 result.add(diode.result, name="d3_1n5822",
-           loc=at(base.diodes_x, base.d3_y, base.diodes_z, cq.Vector(1, 1, 0), 180), color=black)
+           loc=at(base.diodes_x, 0, base.d3_z, cq.Vector(0, 0, 1), 90), color=black)
 result.add(diode.result, name="d2_1n5822",
-           loc=at(base.diodes_x, base.d2_y, base.diodes_z, cq.Vector(1, -1, 0), 180), color=black)
+           loc=at(base.diodes_x, 0, base.d2_z, cq.Vector(1, 1, 0), 180), color=black)
 
 # R6 and R2, soldered inline
 inline_tan = cq.Color(0.80, 0.70, 0.50)

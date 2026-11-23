@@ -48,7 +48,7 @@
      "OUT-"
     ]
    },
-   "note": "1 A single-cell charger with protection (DW01 + 8205A), lying across the box on the floor behind the wiring board, held at its corners. Its own USB-C port is not used: power comes in on IN+ and IN-. IN- and OUT- are joined on the board."
+   "note": "1 A single-cell charger with protection (DW01 + 8205A), standing across the box behind the wiring board, facing backwards, held at its corners. Its own USB-C port is not used: power comes in on IN+ and IN-. IN- and OUT- are joined on the board."
   },
   {
    "ref": "U3",
@@ -101,7 +101,7 @@
      "K"
     ]
    },
-   "note": "The cell's side of the diode OR, lying on the floor behind the TP4056 beside D2, leads up, wired in."
+   "note": "The cell's side of the diode OR, the lower one in the diode holder behind the TP4056, leads bent down, wired in."
   },
   {
    "ref": "D2",
@@ -119,7 +119,7 @@
      "K"
     ]
    },
-   "note": "USB's side of the diode OR, lying on the floor behind the TP4056, leads up, wired in."
+   "note": "USB's side of the diode OR, the upper one in the diode holder behind the TP4056, leads bent up, wired in."
   },
   {
    "ref": "U4",

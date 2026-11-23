@@ -30,7 +30,8 @@ def test_the_ls1_base_has_its_usb_c_and_button_holes(tmp_path):
     assert base["regions"]["pico_tap_holes"]["count"] == 4  # the Pico's four posts
     assert base["regions"]["mt_slots"]["count"] == 2  # the MT3608's two slotted posts
     assert base["regions"]["usbc_pocket"]["count"] == 1  # the USB-C board's inset
-    assert base["regions"]["charger_ledges"]["count"] == 4  # the TP4056's corners
+    assert base["regions"]["charger_grips"]["count"] == 2  # the TP4056's lower edge rests on two
+    assert base["regions"]["diode_bores"]["count"] == 2  # D2 above D3 in the holder
     assert base["regions"]["long_tap_holes"]["count"] == 2  # the clamp's
     assert base["regions"]["board_tap_holes"]["count"] == 4  # the standing wiring board's, along x
     assert base["regions"]["vents"]["count"] >= 20  # round holes
@@ -85,6 +86,12 @@ def test_the_ls1_assembly_places_everything_without_interference(tmp_path):
     assert wb["bounding_box_min"][2] == pytest.approx(3.0 + 1.0)
     assert wb["bounding_box_max"][2] < 3.0 + inside
     assert comps["tp4056_charger"]["bounding_box_max"][0] < wb["bounding_box_min"][0]
+    # the TP4056 stands; D2 sits right above D3, behind it
+    tp, d2, d3 = comps["tp4056_charger"], comps["d2_1n5822"], comps["d3_1n5822"]
+    assert tp["bounding_box_max"][2] - tp["bounding_box_min"][2] > 15
+    assert d2["bounding_box_min"][0] == pytest.approx(d3["bounding_box_min"][0])
+    assert d2["bounding_box_min"][2] > d3["bounding_box_min"][2] + 5
+    assert d3["bounding_box_max"][0] < tp["bounding_box_min"][0]
 
 
 def test_the_ls1_schematic_names_only_real_pins_and_its_modelled_parts():

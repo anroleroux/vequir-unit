@@ -27,9 +27,11 @@ DS18B20, the buzzer's transistor, the battery voltage divider (two
 resistors and a capacitor) and the remaining resistors, and is screwed
 with M1.2 countersunk screws to posts behind its sides.
 
-Behind the perfboard, the TP4056 charger lies on the floor across the box,
-held at its corners by four pillars, and the two load-sharing 1N5822
-diodes (D2 and D3) lie on the floor behind it, to be wired there.
+Behind the perfboard, the TP4056 charger stands across the box facing
+backwards (-x), held at its corners by four grips. Behind it, the two
+load-sharing 1N5822 diodes (D2 and D3) lie across the box one above the
+other, the lower one raised off the floor, in a holder that keeps them in
+that position, to be wired there. This makes the box shorter.
 
 The TSD-1166 LED push button goes through a round hole in the back wall: its
 body against the inside of the wall, its button sticking out.
