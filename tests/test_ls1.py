@@ -31,7 +31,8 @@ def test_the_ls1_base_has_its_usb_c_and_button_holes(tmp_path):
     assert base["regions"]["mt_slots"]["count"] == 2  # the MT3608's two slotted posts
     assert base["regions"]["usbc_pocket"]["count"] == 1  # the USB-C board's inset
     assert base["regions"]["charger_ledges"]["count"] == 4  # the TP4056's corners
-    assert base["regions"]["long_tap_holes"]["count"] == 6  # wiring board 4, clamp 2
+    assert base["regions"]["long_tap_holes"]["count"] == 2  # the clamp's
+    assert base["regions"]["board_tap_holes"]["count"] == 4  # the standing wiring board's, along x
     assert base["regions"]["vents"]["count"] >= 20  # round holes
     assert base["regions"]["lid_screw_holes"]["count"] == 4  # two in each end wall
 
@@ -78,8 +79,12 @@ def test_the_ls1_assembly_places_everything_without_interference(tmp_path):
     front = comps["base"]["bounding_box_max"][0]
     assert comps["usb_c_breakout"]["bounding_box_max"][0] == pytest.approx(front - 0.4)  # in the wall
     inside = comps["base"]["bounding_box_max"][2] - 3.0  # the space above the floor
-    # the board's underside at mid-height: only the buzzer's pins hang lower, 3.9 mm
-    assert comps["wiring_board"]["bounding_box_min"][2] == pytest.approx(3.0 + inside / 2 - 3.9)
+    # the wiring board stands 1 mm off the floor, right behind the USB-C board,
+    # and the TP4056 lies behind it
+    wb = comps["wiring_board"]
+    assert wb["bounding_box_min"][2] == pytest.approx(3.0 + 1.0)
+    assert wb["bounding_box_max"][2] < 3.0 + inside
+    assert comps["tp4056_charger"]["bounding_box_max"][0] < wb["bounding_box_min"][0]
 
 
 def test_the_ls1_schematic_names_only_real_pins_and_its_modelled_parts():

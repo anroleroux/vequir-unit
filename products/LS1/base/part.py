@@ -7,14 +7,15 @@ wall along the -y side, with the single-cell BMS strip on its cell.
 Along the +y side, behind the WS2812 stick on the lid, a Pico 2 W stands on
 its side, screwed with four M1.2 x 3 countersunk screws to four posts rising
 from the floor, and behind it the MT3608 boost board stands on its side in
-two slotted posts. In front of the holder, the wiring board (a perfboard
-with the buzzer, the DS18B20, the diodes, resistors, capacitor and
-transistor) is screwed to four tall pillars with M1.2 x 6 countersunk
-screws, in the upper half of the box. Under it, the TP4056 charger lies in
-four corner pillars on the floor, and in front of that the horizontal USB-C
+two slotted posts. At the front, the horizontal USB-C
 breakout stands on low supports with its front in a pocket in the front
 wall, 0.4 mm from the outside, held down by a clamp (LS1/usb_clamp) screwed
-to two posts over its receptacle. The front wall has a USB-C plug hole and
+to two posts over its receptacle. Right behind it the wiring board (a
+perfboard with the buzzer, the DS18B20, the transistor, resistors and
+capacitor) stands up, its parts facing the front wall and the buzzer at
+the top, screwed with M1.2 x 6 countersunk screws to two posts behind its
+sides; behind that the TP4056 charger lies across the box in four corner
+pillars on the floor, and D2 and D3 lie across the floor behind it. The front wall has a USB-C plug hole and
 round vent holes; the TSD-1166 LED push button goes through a round hole in
 the back wall. Each end wall has two countersunk holes near its ends for
 the M1.2 screws that fasten the lid's blocks from outside. The box is sized from the parts, so it follows a
@@ -40,13 +41,17 @@ Assumptions where the description is silent:
   posts is 11.5 mm tall (clear of D1 above) and holds one end of the board in a vertical slot
   (the board's 1.6 mm plus 0.2 mm), 1.2 mm deep, with 1.5 mm walls, clear of
   the corner holes; the board slides in from the top;
-- the wiring board's underside is at mid-height inside the box (the upper
-  half), its columns across the breadth (turned a quarter turn about z),
-  centred in the front zone both ways; it stands on four 4 mm square
-  pillars from the floor, one under each drilled corner hole, each with an
-  M1.2 tap hole (0.95 mm) 4.5 mm deep;
+- the wiring board stands 1 mm above the floor, its 12 columns across the
+  breadth and its 9 rows up the height (row 0, the buzzer's, at the top),
+  centred across, its parts side 1 mm plus its tallest low part (C1) behind
+  the USB-C board; each of its two posts is 3 mm wide, 0.2 mm beside the
+  board's side edge, 4.5 mm deep behind it (past the buzzer's pins), up to
+  2 mm above the top corner holes, with a 4 mm square tab reaching in
+  behind each corner hole, clear of the leads in the outer columns; each
+  tab has an M1.2 tap hole (0.95 mm) 4 mm deep along x;
 - D2 and D3 (1N5822) lie on the floor across the box, end to end, 1 mm
-  behind the TP4056's corner walls, upside down with their leads bent up
+  behind the TP4056's corner walls (so they stay where they were, behind
+  the TP4056), upside down with their leads bent up
   for the wires: D3 at -y, D2 at +y, anodes outward, cathodes 1 mm apart in
   the middle (they are joined, to the MT3608's VIN+); the front zone grows
   by a diode and a gap to take them;
@@ -64,19 +69,19 @@ Assumptions where the description is silent:
 - the clamp's two posts are 3.5 mm square, 0.5 mm beside the board, up to
   the receptacle's top, centred under the clamp, which lies 0.3 mm behind
   the wall; each has an M1.2 tap hole 4.5 mm deep;
-- the TP4056 lies with its USB-C end (IN+ and IN-) forward, its receptacle
-  1 mm behind the USB-C breakout, centred across the box; each corner
-  pillar is a 1.5 mm ledge under 1.9 mm of the board's corner, with 1.2 mm
-  walls round the corner outside its edges, 0.8 mm above its top, 0.1 mm
-  clear of its edges; it is pressed in (or glued);
+- the TP4056 lies across the box, 1 mm behind the wiring board's posts, its
+  USB-C end (IN+ and IN-) toward +y and its OUT end toward -y (toward D3's
+  anode), centred across; each corner pillar is a 1.5 mm ledge under 1.9 mm
+  of the board's corner, with 1.2 mm walls round the corner outside its
+  edges, 0.8 mm above its top, 0.1 mm clear of its edges; it is pressed in
+  (or glued);
 - D1 (1N5822) is soldered by its anode lead through the MT3608's VOUT+
   hole (the board's upper corner at its VOUT end), lying on the board's
   parts side with its body out past the board's end, its cathode lead free
   for the VSYS wire; its 1.3 mm lead needs the hole opened to 1.4 mm;
 - the vents are round holes, 2.4 mm across at 3.6 mm pitch, across the
-  front wall 2 mm in from its sides, in two bands: between the USB-C pocket
-  and the wiring board, and from the wiring board up to 2 mm under the rim,
-  1 mm clear of the board and of the lid's blocks;
+  front wall 2 mm in from its sides, from 1 mm above the USB-C pocket up to
+  2 mm under the rim, 1 mm clear of the lid's blocks;
 - the lid's four blocks (in the lid) are 4 mm along x, 5 mm across and 6 mm
   deep, 0.2 mm inside the end walls; each end wall has two M1.2 clearance
   holes (1.3 mm) through it in line with the blocks' centres, countersunk
@@ -126,8 +131,12 @@ slot_post_h = 11.5  # the MT3608's posts, clear of D1
 button_clearance = 0.3  # all round the button in its hole
 button_z = 15.0  # the button's axis
 button_in = 2.0  # its body, in from the +y side
-board_pillar = 4.0  # the wiring board's pillars, square
-board_wall_gap = 0.5  # the wiring board's edges, from the front wall and the front zone
+board_post_d = 4.5  # the wiring board's posts and their tabs, along x, behind it
+board_post_w = 3.0  # each post, outside the board's side edge, across
+board_post_gap = 0.2  # between a post and the board's edge
+board_tab = 4.0  # each tab, behind a corner hole, square
+board_tap = 4.0  # the tabs' M1.2 tap holes, along x
+board_lift = 1.0  # the wiring board's bottom edge, above the floor
 long_tap = 4.5  # the M1.2 x 6 screws' tap holes, from the pillar's top
 usb_skin = 0.4  # the front wall left in front of the USB-C board
 usb_raise = 2.0  # the USB-C board's underside, above the floor
@@ -176,14 +185,21 @@ holder_edge_in = mt_parts_in + gap  # the holder's +y side
 hb = holder.result.toCompound().BoundingBox()
 holder_length, holder_breadth = hb.xlen, hb.ylen
 
-# the front zone, in front of the holder: the wiring board above; below it,
-# from the front wall back, the USB-C board (partly in the wall), the TP4056
-# and its corner walls, and D2 and D3 across the box
-wb = wiring.board  # the perfboard: length (across the breadth), width (along x)
-board_zone = wb.width + 2 * board_wall_gap
-usb_zone = (usbc.length - (wall - usb_skin) + gap + charger.length + charger.usb_proud
-            + corner_wall + gap + diode.body_d + gap)
-front_zone_length = max(board_zone, usb_zone)
+# the front zone, in front of the holder, from the front wall back: the USB-C
+# board (partly in the wall), the wiring board standing up (its parts facing
+# the wall) on its posts, the TP4056 turned across the box in its corner
+# pillars, and D2 and D3 across the box; each as a distance from the wall's inside
+wb = wiring.board  # the perfboard: length (across the breadth), width (its height, standing)
+low_parts = max(wiring.capacitor.height, wiring.resistor.height)  # its parts beside the USB-C board
+usb_rear_in = usbc.length - (wall - usb_skin)
+wb_face_in = usb_rear_in + gap + low_parts  # the wiring board's parts side
+wb_back_in = wb_face_in + wb.thickness
+posts_back_in = wb_back_in + board_post_d
+tp_front_in = posts_back_in + gap  # the TP4056's corner walls, front faces
+tp_back_in = tp_front_in + 2 * corner_wall + charger.width
+diodes_front_in = tp_back_in + gap
+front_zone_length = diodes_front_in + diode.body_d + gap
+assert wiring.buzzer.body_bottom - wb.thickness < board_post_d, "the buzzer's pins reach past the posts"
 
 b = holder_breadth + holder_edge_in  # breadth, outside
 l = 2 * wall + holder_length + gap + front_zone_length  # length, outside
@@ -202,13 +218,17 @@ bms_x = holder_dx
 bms_y = holder_dy  # the cell's axis
 bms_z = holder_dz + holder.axis_height + holder.cell.diameter / 2
 
-# the wiring board, raised, turned so its columns run across
-wb_x = (front_zone + front_inside) / 2  # centred in the front zone
+# the wiring board standing up behind the USB-C board, its parts facing +x
+# (the wall), its rows up the height with row 0 (the buzzer's) at the top and
+# its columns across: turned 120 degrees about (-1, 1, -1), which takes its x
+# to -y, its y to -z and its z (its parts' side) to +x
+wb_back_x = front_inside - wb_back_in  # its underside's plane
 wb_y = 0.0
-wb_z = wall + (h - wall) / 2  # its underside: mid-height inside
-wb_holes = [(wb_x - y, wb_y + x) for x, y in wb.mount_holes]  # a quarter turn about z
-wb_screw_top = wb_z + wb.thickness + head_out(wb.mount_hole, board_screw)
+wb_zc = wall + board_lift + wb.width / 2  # its centre's height
+wb_holes = [(-x, wb_zc - y) for x, y in wb.mount_holes]  # (y, z) of each corner hole
+wb_screw_top = wb_back_x + wb.thickness + head_out(wb.mount_hole, board_screw)  # the heads, flush
 assert wb.length < b, "the wiring board is wider than the box"
+assert wb_zc + wb.width / 2 < h, "the wiring board is taller than the box"
 
 # the USB-C board, its front in the wall's pocket
 usbc_front = l / 2 - usb_skin
@@ -229,16 +249,19 @@ clamp_z = usbc_top  # its underside, on the receptacle
 clamp_screw_top = clamp_z + clamp_t  # flush with its top
 assert clamp_x - clamp_w / 2 > usbc_front - usbc.usb_d, "the clamp is not over the receptacle"
 
-# the TP4056 behind it, on its corner pillars
-charger_front = usbc_front - usbc.length - gap  # its receptacle's mouth
-charger_x = charger_front - charger.usb_proud - charger.length / 2
+# the TP4056 behind the wiring board's posts, turned a quarter turn about z
+# (its USB-C end, IN+ and IN-, toward +y; its OUT end toward -y and D3), on its
+# corner pillars
+charger_x = front_inside - tp_front_in - corner_wall - charger.width / 2
 charger_y = 0.0
 charger_z = wall + ledge
-charger_corners = [(charger_x + sx * charger.length / 2, charger_y + sy * charger.width / 2)
+charger_dx, charger_dy = charger.width, charger.length  # its footprint, turned
+charger_corners = [(charger_x + sx * charger_dx / 2, charger_y + sy * charger_dy / 2)
                    for sx in (-1, 1) for sy in (-1, 1)]
+assert charger_dy / 2 + corner_wall < b / 2, "the TP4056 is too long to lie across"
 
 # D2 and D3 behind it, across the box, upside down (leads up), cathodes in the middle
-diodes_x = charger_x - charger.length / 2 - corner_wall - gap - diode.body_d / 2
+diodes_x = front_inside - diodes_front_in - diode.body_d / 2
 diode_y = diode.pitch / 2 + diode.lead_d / 2 + gap / 2  # each one's centre, off the middle
 d3_y, d2_y = -diode_y, diode_y
 diodes_z = wall + diode.body_d  # its own z = 0 (the "board") turned to the top of its body
@@ -270,7 +293,7 @@ assert mt_y - boost.height >= holder_edge + gap - 1e-6, "the MT3608 runs into th
 stick_x = pico_x
 stick_y = b / 2 - stick_back_in  # its underside's plane
 stick_holes = [(stick_x + x, stick_z - stick.cap_y) for x in stick.hole_xs]  # (x, z), turned
-assert stick_x + stick.length / 2 < wb_x - wb.width / 2, "the LED stick runs into the wiring board"
+assert stick_x + stick.length / 2 < wb_back_x - board_post_d, "the LED stick runs into the wiring board's posts"
 
 # D1 on the MT3608's VOUT+ pad (the board turned a quarter turn about x:
 # its local y up, its parts side toward -y)
@@ -298,9 +321,8 @@ r2_z = button_z
 assert r2_x + inline.length / 2 < pico_x - pico.length / 2 - pico.usb_overhang - 0.5, \
     "R2 runs into the Pico"
 
-# the vents: round holes in two bands across the front wall, clear of the blocks
-vent_bands = [(pocket_top + vent_gap, wb_z - vent_gap),
-              (wb_z + wb.thickness + vent_gap, h - vent_top)]
+# the vents: round holes across the front wall, from the USB-C pocket up, clear of the blocks
+vent_bands = [(pocket_top + vent_gap, h - vent_top)]
 vent_n = math.floor((b - 2 * vent_in - vent_d) / vent_pitch) + 1
 vent_ys = [(i - (vent_n - 1) / 2) * vent_pitch for i in range(vent_n)]
 vent_holes = []
@@ -375,12 +397,12 @@ corner_blocks = (
     cq.Workplane("XY", origin=(0, 0, wall))
     .pushPoints([(x + (corner / 2 - corner_under) * (1 if x > charger_x else -1),
                   y + (corner / 2 - corner_under) * (1 if y > charger_y else -1))
-                 for x, y in charger_corners])
+                 for x, y in charger_corners])  # (turned: its footprint is charger_dx by charger_dy)
     .rect(corner, corner).extrude(ledge + charger.pcb_t + corner_above)
 )
 board_room = (
     cq.Workplane("XY", origin=(charger_x, charger_y, charger_z))
-    .rect(charger.length + 2 * corner_clearance, charger.width + 2 * corner_clearance)
+    .rect(charger_dx + 2 * corner_clearance, charger_dy + 2 * corner_clearance)
     .extrude(charger.pcb_t + corner_above)
 )
 # the Pico's posts, behind its underside, and their tap holes along -y
@@ -406,14 +428,24 @@ mt_slots = (
                  for s in (-1, 1)])
     .rect(slot_engagement + slot_clearance / 2, slot_w).extrude(slot_post_h)
 )
-# the wiring board's pillars and their tap holes
-board_pillars = (
-    cq.Workplane("XY", origin=(0, 0, wall)).pushPoints(wb_holes)
-    .rect(board_pillar, board_pillar).extrude(wb_z - wall)
-)
+# the wiring board's two posts, beside its side edges behind it, with a tab
+# reaching in behind each corner hole, and the tabs' tap holes along -x
+post_x0 = wb_back_x - board_post_d
+board_pillars = None
+for side in (-1, 1):
+    edge = side * (wb.length / 2 + board_post_gap)
+    top = max(z for _, z in wb_holes) + board_tab / 2
+    column = (cq.Workplane("XY", origin=(post_x0, min(edge, edge + side * board_post_w), wall))
+              .box(board_post_d, board_post_w, top - wall, centered=False))
+    for y, z in wb_holes:
+        if y * side > 0:
+            y0, y1 = sorted((y - side * board_tab / 2, edge))
+            column = column.union(cq.Workplane("XY", origin=(post_x0, y0, z - board_tab / 2))
+                                  .box(board_post_d, y1 - y0, board_tab, centered=False))
+    board_pillars = column if board_pillars is None else board_pillars.union(column)
 board_taps = (
-    cq.Workplane("XY", origin=(0, 0, wb_z - long_tap)).pushPoints(wb_holes)
-    .circle(tap_drill / 2).extrude(long_tap)
+    cq.Workplane("YZ", origin=(wb_back_x - board_tap, 0, 0)).pushPoints(wb_holes)
+    .circle(tap_drill / 2).extrude(board_tap)
 )
 result = (result.union(supports).union(clamp_posts).cut(clamp_taps)
           .union(corner_blocks.cut(board_room))
@@ -440,8 +472,10 @@ regions = {
     "pico_tap_holes": result.faces("%CYLINDER").filter(
         lambda f: abs(f.BoundingBox().xlen - tap_drill) < 1e-3
         and abs(f.BoundingBox().ylen - tap_depth) < 1e-3),
-    "long_tap_holes": result.faces("%CYLINDER").filter(  # the wiring board's and the clamp's
+    "long_tap_holes": result.faces("%CYLINDER").filter(  # the clamp's
         lambda f: abs(f.BoundingBox().zlen - long_tap) < 1e-3),
+    "board_tap_holes": result.faces("%CYLINDER").filter(  # the wiring board's, along x
+        lambda f: abs(f.BoundingBox().xlen - board_tap) < 1e-3),
     "charger_ledges": result.faces("+Z").filter(
         lambda f: abs(f.Center().z - charger_z) < 1e-6),
     "mt_slots": result.faces("%PLANE").filter(  # the slots' bottoms, where the board's ends go

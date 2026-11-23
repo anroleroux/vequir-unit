@@ -14,20 +14,22 @@ side, fixed with M1.2 countersunk screws to pillars rising from the floor.
 Behind the Pico, the MT3608 boost converter is also mounted on its side, held
 by pillars.
 
-In front of the holder, a small perfboard (the wiring board), cut as short
-as its parts allow, is raised into the upper half of the box on pillars
-rising from the floor, centred in the space in front of the holder and
-screwed down with M1.2 countersunk screws. It carries the buzzer, the bare
-DS18B20, the buzzer's transistor, the battery voltage divider (two
-resistors and a capacitor) and the remaining resistors.
+At the front, the horizontal USB-C breakout is raised a little and moved
+forward into the front wall, in an inset that leaves its connector 0.4 mm
+from the outside, with a hole for the plug; a clamp across the connector,
+screwed down to two posts with M1.2 countersunk screws, presses it down.
+The front wall has vent holes.
 
-Under it, the TP4056 charger lies on the floor right behind the USB-C
-board, held at its corners by four pillars, and the two load-sharing
-1N5822 diodes (D2 and D3) lie on the floor next to it, to be wired there. The horizontal USB-C breakout is
-raised a little and moved forward into the front wall, in an inset that
-leaves its connector 0.4 mm from the outside, with a hole for the plug; a
-clamp across the connector, screwed down to two posts with M1.2 countersunk
-screws, presses it down. The front wall has vent holes.
+Right after the USB-C breakout, a small perfboard (the wiring board), cut as
+short as its parts allow, stands up facing the front (+x), the buzzer at the
+top and its longest side across the box. It carries the buzzer, the bare
+DS18B20, the buzzer's transistor, the battery voltage divider (two
+resistors and a capacitor) and the remaining resistors, and is screwed
+with M1.2 countersunk screws to posts behind its sides.
+
+Behind the perfboard, the TP4056 charger lies on the floor across the box,
+held at its corners by four pillars, and the two load-sharing 1N5822
+diodes (D2 and D3) lie on the floor behind it, to be wired there.
 
 The TSD-1166 LED push button goes through a round hole in the back wall: its
 body against the inside of the wall, its button sticking out.

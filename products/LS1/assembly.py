@@ -5,17 +5,18 @@ battery_holders/single_18650_holder) glued on the floor against the back
 wall along the -y side, the single-cell BMS strip on the cell. Along the +y
 side a Pico 2 W stands on its side, screwed to the base's four posts with
 M1.2 x 3 countersunk screws, and behind it the MT3608 boost board stands on
-its side in two slotted posts. In front of the holder, on the floor, the
-TP4056 charger sits in four corner pillars, and in front of it the
-horizontal USB-C breakout stands on low supports with its front in the
-front wall's pocket, held down by the USB clamp (LS1/usb_clamp) and two
-M1.2 x 6 countersunk screws. D2 and D3 (1N5822) lie across the floor
-behind the TP4056, leads up for the wires, and D1 is soldered by its anode
-lead into the MT3608's VOUT+ hole. R6 is soldered inline at the LED stick's
-data input, and R2 on the button's LED+ leg. Above them, in the upper half, the wiring
-board (LS1/wiring_board: the buzzer, the DS18B20, the diodes, resistors,
-capacitor and transistor on a perfboard) is screwed to four tall pillars
-with M1.2 x 6 countersunk screws. The TSD-1166 LED push button goes through
+its side in two slotted posts. At the front, the horizontal USB-C
+breakout stands on low supports with its front in the front wall's
+pocket, held down by the USB clamp (LS1/usb_clamp) and two M1.2 x 6
+countersunk screws. Right behind it the wiring board (LS1/wiring_board: the
+buzzer, the DS18B20, the transistor, resistors and capacitor on a
+perfboard) stands up, its parts facing the front wall and the buzzer at the
+top, screwed to the base's two posts with M1.2 x 6 countersunk screws.
+Behind that the TP4056 charger lies across the box in four corner pillars,
+and D2 and D3 (1N5822) lie across the floor behind it, leads up for the
+wires; D1 is soldered by its anode lead into the MT3608's VOUT+ hole. R6 is
+soldered inline at the LED stick's data input, and R2 on the button's LED+
+leg. The TSD-1166 LED push button goes through
 the back wall. The lid is seated on top, fastened by four M1.2 x 6
 countersunk screws through the end walls into its corner blocks, and the WS2812 8 x 1 stick is
 screwed to two pillars inside its +y skirt with M1.2 x 3 countersunk
@@ -26,7 +27,7 @@ The base and the lid come from their own scripts through load_part, the
 rest through load_library, so the model follows any change to them.
 
 The summary's interference lists each screw against what it is screwed into
-(the base's posts and pillars, and the lid's pillars): a screw's 1.2 mm
+(the base's posts, pillars and tabs, and the lid's pillars and blocks): a screw's 1.2 mm
 shank forming its thread in a 0.95 mm tap hole, as intended, and marked as
 a thread.
 
@@ -41,6 +42,10 @@ Assumptions where the description is silent:
   a turn about (1, 1, 0) (its x to +y, its z to -z), D2 about (1, -1, 0)
   (its x to -y), so both anodes point outward and the cathodes meet;
 - R6 and R2 lie along x as they are (the inline resistor is modelled along x);
+- the wiring board is turned 120 degrees about (-1, 1, -1): its x to -y, its
+  y to -z (row 0, the buzzer's, at the top), its parts' side to +x; its
+  screws lie along x, heads toward +x;
+- the TP4056 is turned a quarter turn about z: its USB-C end to +y;
 - the stick and the Pico are turned a quarter turn about x so their parts
   face +y (their -y edges at the top); the MT3608 the other way, its parts
   facing -y toward the holder, its VIN end at +x;
@@ -85,10 +90,11 @@ result = (
          loc=at(base.holder_dx, base.holder_dy, base.holder_dz))
     .add(bms.result, name="bms_1s_3a", loc=at(base.bms_x, base.bms_y, base.bms_z), color=board_green)
     .add(charger.result, name="tp4056_charger",
-         loc=at(base.charger_x, base.charger_y, base.charger_z), color=board_blue)
-    # a quarter turn about z: the board's columns run across the breadth
+         loc=at(base.charger_x, base.charger_y, base.charger_z, cq.Vector(0, 0, 1), 90),
+         color=board_blue)
+    # standing up, its parts facing +x, row 0 at the top
     .add(wiring.result, name="wiring_board",
-         loc=at(base.wb_x, base.wb_y, base.wb_z, cq.Vector(0, 0, 1), 90))
+         loc=at(base.wb_back_x, base.wb_y, base.wb_zc, cq.Vector(-1, 1, -1), 120))
     # a quarter turn about x: -90 takes the board's +z (its parts) to +y, +90 to -y
     .add(pico.result, name="pico_2w",
          loc=at(base.pico_x, base.pico_y, base.pico_z, x_axis, -90), color=board_green)
@@ -117,9 +123,9 @@ for i, (x, z) in enumerate(base.stick_holes, start=1):
     result.add(screw.result, name=f"stick_screw_{i}",
                loc=at(x, stick_head + screw.length, z, x_axis, 90), color=steel)
 
-for i, (x, y) in enumerate(base.wb_holes, start=1):
+for i, (y, z) in enumerate(base.wb_holes, start=1):  # along x, heads toward +x
     result.add(board_screw.result, name=f"board_screw_{i}",
-               loc=at(x, y, base.wb_screw_top - board_screw.length), color=steel)
+               loc=at(base.wb_screw_top - board_screw.length, y, z, y_axis, 90), color=steel)
 
 # D2 and D3 across the floor behind the TP4056
 result.add(diode.result, name="d3_1n5822",

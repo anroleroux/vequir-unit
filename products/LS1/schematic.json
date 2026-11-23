@@ -48,7 +48,7 @@
      "OUT-"
     ]
    },
-   "note": "1 A single-cell charger with protection (DW01 + 8205A), on the floor behind the USB-C board, held at its corners. Its own USB-C port is not used: power comes in on IN+ and IN-. IN- and OUT- are joined on the board."
+   "note": "1 A single-cell charger with protection (DW01 + 8205A), lying across the box on the floor behind the wiring board, held at its corners. Its own USB-C port is not used: power comes in on IN+ and IN-. IN- and OUT- are joined on the board."
   },
   {
    "ref": "U3",
@@ -295,7 +295,7 @@
      "GND"
     ]
    },
-   "note": "On the wiring board at the front, behind the vents: it measures the air inside the box; one-wire on GP6."
+   "note": "On the standing wiring board, facing the vents in the front wall: it measures the air inside the box; one-wire on GP6."
   },
   {
    "ref": "R1",
