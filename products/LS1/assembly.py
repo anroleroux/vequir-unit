@@ -1,11 +1,12 @@
 """LS1, assembled.
 
-The LS1: the base with a single 18650 holder and its cell (vequir-power's
-battery_holders/single_18650_holder) glued on the floor against the back
-wall along the -y side, the single-cell BMS strip on the cell. Along the +y
-side a Pico 2 W stands on its side, screwed to the base's four posts with
-M1.2 x 6 countersunk screws, and behind it the MT3608 boost board stands on
-its side in two slotted posts. At the front, the horizontal USB-C
+The LS1: the base with a bought single 18650 holder (power/holder_18650_1s,
+wire leads) and its cell glued on the floor against the back wall along
+the -y side, the single-cell BMS strip on the cell. Along the +y side a
+Pico 2 W stands on its side, 4 mm clear of the button, screwed to the
+base's two posts at its -x end with M1.2 x 6 countersunk screws (its +x
+posts are left off for now), and behind it the MT3608 boost board stands
+on its side in two slotted posts, 4 mm clear of the TP4056. At the front, the horizontal USB-C
 breakout stands on low supports with its front in the front wall's
 pocket, held down by the USB clamp (LS1/usb_clamp) and two M1.2 x 6
 countersunk screws. Right behind it the wiring board (LS1/wiring_board: the
@@ -17,13 +18,15 @@ box, its parts facing backwards. Both boards stand in slots in the floor,
 held at the top by the board clamp (LS1/board_clamp), screwed with an
 M1.2 x 6 countersunk screw to the pillar between them. Behind the TP4056,
 D3, D2 and D1 (1N5822) lie across the box one above the other in the
-base's three-hole diode pillar, their leads straight and short. R6 is
+base's three-hole diode pillar, their leads straight and short, their -y
+ends 4 mm off the lid. R6 is
 soldered inline at the LED stick's data input; R2 stands between the
 button's legs, not connected. The TSD-1166 LED push button goes through
 the back wall. The lid is seated on top, fastened by four M1.2 x 6
-countersunk screws through the end walls into its corner blocks, and the WS2812 8 x 1 stick is
-screwed to two pillars inside its +y skirt with M1.2 x 6 countersunk
-screws, centred along the side, each LED behind its window. The bought-in parts
+countersunk screws through the end walls into its corner blocks; the
+WS2812 8 x 1 stick sits in a shallow pocket inside its +y skirt on two
+rests, centred along the side, each LED in its window, unscrewed for now;
+a shroud inside its -y skirt covers J2's top and sides. The bought-in parts
 come from vequir-standard.
 
 The base and the lid come from their own scripts through load_part, the
@@ -57,7 +60,8 @@ import cadquery as cq
 
 base = load_part("base")  # floor and end walls at +-x, standing on z = 0; the layout
 lid = load_part("lid")  # modelled as installed: skirts stand on z = 0
-holder = load_library("battery_holders/single_18650_holder")
+holder = load_library("power/holder_18650_1s")
+cell = load_library("power/cell_18650")  # standing up: negative end on z = 0
 boost = load_library("power/mt3608_boost")
 bms = load_library("power/bms_1s_3a")
 charger = load_library("power/tp4056_charger")
@@ -89,8 +93,11 @@ def at(x, y, z, axis=None, angle=0):
 result = (
     cq.Assembly(name="LS1")
     .add(base.result, name="base", color=cq.Color(0.36, 0.56, 0.78))
-    .add(holder.result, name="single_18650_holder",
-         loc=at(base.holder_dx, base.holder_dy, base.holder_dz))
+    .add(holder.result, name="holder_18650_1s",
+         loc=at(base.holder_dx, base.holder_dy, base.holder_dz), color=cq.Color(0.10, 0.10, 0.10))
+    # the cell laid along +x in it (a quarter turn about y takes its +z to +x)
+    .add(cell.result, name="cell_18650", loc=at(base.cell_x0, base.holder_dy, base.cell_z, y_axis, 90),
+         color=cq.Color(0.88, 0.56, 0.24))
     .add(bms.result, name="bms_1s_3a", loc=at(base.bms_x, base.bms_y, base.bms_z), color=board_green)
     .add(charger.result, name="tp4056_charger",
          loc=at(base.charger_x, base.charger_y, base.charger_z, cq.Vector(-1, -1, 1), 120),
@@ -120,12 +127,6 @@ for i, (x, z) in enumerate(base.pico_holes, start=1):
     result.add(screw.result, name=f"pico_screw_{i}",
                loc=at(x, pico_head - screw.length, z, x_axis, -90), color=steel)
 
-# the stick's screws: heads on its back (-y), through its 2.0 mm holes into the pillars
-stick_head = base.stick_y - base.head_out(stick.hole)
-for i, (x, z) in enumerate(base.stick_holes, start=1):
-    result.add(screw.result, name=f"stick_screw_{i}",
-               loc=at(x, stick_head + screw.length, z, x_axis, 90), color=steel)
-
 # the board clamp over the pillar between the boards, and its screw
 result.add(board_clamp.result, name="board_clamp", color=cq.Color(0.36, 0.56, 0.78))
 result.add(board_screw.result, name="board_clamp_screw",
@@ -134,7 +135,8 @@ result.add(board_screw.result, name="board_clamp_screw",
 # D3, D2 and D1 in the diode pillar, one above the other, leads straight
 straight = diode.straight(base.diode_lead)
 for name, z in (("d3_1n5822", base.d3_z), ("d2_1n5822", base.d2_z), ("d1_1n5822", base.d1_z)):
-    result.add(straight, name=name, loc=at(base.diodes_x, 0, z, cq.Vector(0, 0, 1), 90), color=black)
+    result.add(straight, name=name, loc=at(base.diodes_x, base.diodes_y, z, cq.Vector(0, 0, 1), 90),
+               color=black)
 
 # R6 inline at the stick; R2 standing up between the button's legs
 inline_tan = cq.Color(0.80, 0.70, 0.50)

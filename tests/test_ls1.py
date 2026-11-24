@@ -27,7 +27,7 @@ def test_the_ls1_base_has_its_usb_c_and_button_holes(tmp_path):
     assert base["bounding_box"]["size"][2] == pytest.approx(30.0)
     assert base["regions"]["usbc_hole"]["count"] == 4
     assert base["regions"]["button_hole"]["count"] == 1
-    assert base["regions"]["pico_tap_holes"]["count"] == 4  # the Pico's four posts
+    assert base["regions"]["pico_tap_holes"]["count"] == 2  # the Pico's two -x posts, for now
     assert base["regions"]["mt_slots"]["count"] == 2  # the MT3608's two slotted posts
     assert base["regions"]["usbc_pocket"]["count"] == 1  # the USB-C board's inset
     assert base["regions"]["board_slots"]["count"] == 2  # the wiring board's and the TP4056's
@@ -42,8 +42,8 @@ def test_the_ls1_lid_has_a_window_for_each_led(tmp_path):
     assert lid["regions"]["led_windows"]["count"] == 8 * 4  # four sides each
     assert lid["regions"]["block_bottoms"]["count"] == 4  # a block at each end of each end wall
     assert lid["regions"]["block_tap_holes"]["count"] == 4
-    assert lid["regions"]["stick_pillars"]["count"] == 2
-    assert lid["regions"]["tap_holes"]["count"] == 2
+    assert lid["regions"]["stick_rests"]["count"] == 2  # in the stick's pocket
+    assert lid["regions"]["header_shroud_top"]["count"] >= 1  # over J2
     assert lid["regions"]["header_hole"]["count"] == 4  # J2's hole: four sides
 
 
@@ -54,28 +54,26 @@ def test_the_board_clamp_holds_both_boards(tmp_path):
 
 
 def test_the_ls1_assembly_places_everything_without_interference(tmp_path):
-    """The only overlaps are the M1.2 screws forming their threads: four in
+    """The only overlaps are the M1.2 screws forming their threads: two in
     the base's Pico posts, two in its USB clamp posts, one in the board
-    clamp's pillar, two in the lid's stick pillars and four in its corner
-    blocks."""
+    clamp's pillar and four in the lid's corner blocks."""
     summary = _summary(build_part(LS1 / "assembly.py", tmp_path / "out"))
     pairs = sorted((i["a"].split("/")[-1], i["b"].split("/")[-1]) for i in summary["interference"])
-    assert pairs == sorted([("base", f"pico_screw_{n}") for n in range(1, 5)]
+    assert pairs == sorted([("base", f"pico_screw_{n}") for n in range(1, 3)]
                            + [("base", "board_clamp_screw")]
                            + [("base", f"clamp_screw_{n}") for n in range(1, 3)]
-                           + [(f"stick_screw_{n}", "lid") for n in range(1, 3)]
                            + [(f"lid_screw_{n}", "lid") for n in range(1, 5)])
     assert all(i.get("thread") for i in summary["interference"])
     names = {c["name"].split("/")[-1] for c in summary["components"]}
-    assert names == {"base", "single_18650_holder", "mt3608_boost", "bms_1s_3a",
+    assert names == {"base", "holder_18650_1s", "cell_18650", "mt3608_boost", "bms_1s_3a",
                      "usb_c_breakout", "tsd_1166_button", "ws2812_stick_8", "pico_2w",
                      "tp4056_charger", "wiring_board", "usb_clamp", "board_clamp", "board_clamp_screw",
-                     "lid"} | {f"pico_screw_{n}" for n in range(1, 5)} \
-        | {f"stick_screw_{n}" for n in range(1, 3)} \
+                     "lid"} | {f"pico_screw_{n}" for n in range(1, 3)} \
         | {f"clamp_screw_{n}" for n in range(1, 3)} | {f"lid_screw_{n}" for n in range(1, 5)} \
         | {"d1_1n5822", "d2_1n5822", "d3_1n5822", "r2_inline", "r6_inline"}
     touching = {(c["a"].split("/")[-1], c["b"].split("/")[-1]) for c in summary["contacts"]}
-    assert ("ws2812_stick_8", "lid") in touching  # the stick against the skirt
+    assert ("ws2812_stick_8", "lid") in touching  # the stick on its rests in the skirt's pocket
+    assert ("holder_18650_1s", "cell_18650") in touching  # the cell in its holder
     assert ("base", "tsd_1166_button") in touching  # the button body against the back wall
     assert ("base", "pico_2w") in touching  # the Pico on its posts
     assert ("base", "mt3608_boost") in touching  # the MT3608 in its slots
@@ -107,6 +105,12 @@ def test_the_ls1_assembly_places_everything_without_interference(tmp_path):
     d1 = comps["d1_1n5822"]
     assert d1["bounding_box_min"][0] == pytest.approx(d3["bounding_box_min"][0])
     assert d1["bounding_box_min"][2] > d2["bounding_box_min"][2] + 5
+    # 4 mm gaps: the diodes' -y ends to the lid, the Pico's USB end to the
+    # button, the MT3608's +x end to the TP4056's parts
+    half_b = comps["base"]["bounding_box_max"][1]
+    assert d3["bounding_box_min"][1] == pytest.approx(-half_b + 4.0)
+    assert comps["pico_2w"]["bounding_box_min"][0] == pytest.approx(comps["tsd_1166_button"]["bounding_box_max"][0] + 4.0)
+    assert comps["mt3608_boost"]["bounding_box_max"][0] == pytest.approx(tp["bounding_box_min"][0] - 4.0)
 
 
 def test_the_ls1_schematic_names_only_real_pins_and_its_modelled_parts():

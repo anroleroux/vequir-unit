@@ -70,7 +70,7 @@
   {
    "ref": "BT1",
    "name": "18650",
-   "item": "battery_holders/single_18650_holder",
+   "item": "power/holder_18650_1s",
    "x": 50,
    "y": 12,
    "w": 12,
@@ -83,7 +83,7 @@
      "-"
     ]
    },
-   "note": "One 18650 cell in its holder, glued to the floor, the BMS strip on top."
+   "note": "One 18650 cell in a bought single-cell holder with wire leads, glued to the floor, the BMS strip on top."
   },
   {
    "ref": "D3",

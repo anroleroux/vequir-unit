@@ -4,15 +4,16 @@ top, with the sides at +y and -y removed and the end walls at +x (front) and
 size: l (length), b (breadth), h (height) and the wall thickness; the walls
 and the floor are all one wall thickness thick.
 
-A single 18650 holder with its cell (library
-battery_holders/single_18650_holder) is glued on the floor against the back
-wall, along the -y side, with the single-cell BMS strip (Mantech 210454) on
-top of the cell.
+An off-the-shelf single-cell 18650 holder with wire leads (Micro Robotics
+18650-1S-WIRE) and its cell are glued on the floor against the back wall,
+along the -y side, with the single-cell BMS strip (Mantech 210454) on top
+of the cell.
 
 Behind the LED strip on the lid, a Raspberry Pi Pico 2 W is mounted on its
-side, fixed with M1.2 x 6 countersunk screws to pillars rising from the floor.
-Behind the Pico, the MT3608 boost converter is also mounted on its side, held
-by pillars.
+side, 4 mm away from the switch, fixed with M1.2 x 6 countersunk screws to
+pillars rising from the floor at its -x end (the +x side mount is left off
+for now). Behind the Pico, the MT3608 boost converter is also mounted on its
+side, held by pillars, 4 mm away from the TP4056.
 
 At the front, the horizontal USB-C breakout is raised a little and moved
 forward into the front wall, in an inset that leaves its connector 0.4 mm
@@ -37,7 +38,7 @@ slot on either side that presses down on the top of each board and holds
 it. Behind the TP4056, the three 1N5822 diodes lie across the box one
 above the other in a pillar with three holes: D1 at the top, above the two
 load-sharing diodes (D2 and D3). Their leads are straight and short, to be
-wired there.
+wired there, and they sit toward -y, 4 mm away from the lid.
 
 The TSD-1166 LED push button goes through a round hole in the back wall: its
 body against the inside of the wall, its button sticking out.
