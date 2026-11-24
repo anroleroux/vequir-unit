@@ -8,6 +8,10 @@ countersunk screw through the end wall from the outside of the base fastens
 each block.
 
 An 8 x 1 RGB WS2812 stick sits against the inside of the lid's +y side,
-along it, with its LEDs facing out, each LED seated in its own square window
-through the side. It is screwed to two little pillars on the inside of the
+along it and centred on it, with its LEDs facing out, each LED behind its
+own square window through the side. It is screwed to two little pillars on the inside of the
 side with M1.2 x 6 countersunk screws.
+
+The lid's -y side has a rectangular hole for the wiring board's 10-pin box
+header, whose face touches the inside of the side, so a ribbon cable plugs
+in from outside.

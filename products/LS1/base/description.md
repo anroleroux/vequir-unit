@@ -24,17 +24,26 @@ Right after the USB-C breakout, a small perfboard (the wiring board), cut as
 short as its parts allow, stands up facing the front (+x), the buzzer at the
 top and its longest side across the box. It carries the buzzer, the bare
 DS18B20, the buzzer's transistor, the battery voltage divider (two
-resistors and a capacitor) and the remaining resistors, and is screwed
-with M1.2 countersunk screws to posts behind its sides.
+resistors and a capacitor) and the remaining resistors, all moved as far
+as they go to its +y side, and a 10-pin box header at its -y side that
+points -y and touches the inside of the lid, where the lid has a hole for
+the cable.
 
 Behind the perfboard, the TP4056 charger stands across the box facing
-backwards (-x), held at its corners by four grips. Behind it, the two
-load-sharing 1N5822 diodes (D2 and D3) lie across the box one above the
-other, the lower one raised off the floor, in a holder that keeps them in
-that position, to be wired there. This makes the box shorter.
+backwards (-x), in almost the same place. The bottoms of both boards lie in
+slots in the floor. A clamp at the top, screwed with an M1.2 x 6
+countersunk screw to a pillar that comes up between the two boards, has a
+slot on either side that presses down on the top of each board and holds
+it. Behind the TP4056, the three 1N5822 diodes lie across the box one
+above the other in a pillar with three holes: D1 at the top, above the two
+load-sharing diodes (D2 and D3). Their leads are straight and short, to be
+wired there.
 
 The TSD-1166 LED push button goes through a round hole in the back wall: its
 body against the inside of the wall, its button sticking out.
 
-The LED stick's data resistor and the button LED's resistor are soldered
-inline at their inputs, on the stick and on the button's LED leg.
+The LED stick's data resistor is soldered inline at its input. The button
+LED's resistor stands between the button's legs, in line with the button
+along z, not connected (hovering in the air).
+
+The LED stick on the lid is centred along the box's side.

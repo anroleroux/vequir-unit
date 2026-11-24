@@ -1,6 +1,6 @@
 {
  "title": "Wiring",
- "note": "One USB-C port for charging and data: VBUS charges the cell through the TP4056, and D+ and D- go to the Pico's USB test pads. Two 1N5822 diodes share the load: the MT3608 runs from whichever of VBUS and the cell is higher, so with USB in the cell only charges. A third 1N5822 joins the MT3608 (set to about 5.2 V) to the Pico's VSYS, so nothing can push power back into a computer. The buzzer, the DS18B20, Q1, C1, R1 and R3 to R5 sit on the wiring board; D1 is soldered onto the MT3608, D2 and D3 lie on the floor, and R2 and R6 are soldered inline at the button and the LED stick.",
+ "note": "One USB-C port for charging and data: VBUS charges the cell through the TP4056, and D+ and D- go to the Pico's USB test pads. Two 1N5822 diodes share the load: the MT3608 runs from whichever of VBUS and the cell is higher, so with USB in the cell only charges. A third 1N5822 joins the MT3608 (set to about 5.2 V) to the Pico's VSYS, so nothing can push power back into a computer. The buzzer, the DS18B20, Q1, C1, R1 and R3 to R5 sit on the wiring board, with a 10-pin box header at its edge (its wiring not yet drawn); D1, D2 and D3 lie in the diode pillar behind the TP4056, leads straight, wired in; R6 is soldered inline at the LED stick and R2 sits between the button's legs.",
  "groups": [
   {
    "label": "Load sharing (diode OR)",
@@ -101,7 +101,7 @@
      "K"
     ]
    },
-   "note": "The cell's side of the diode OR, the lower one in the diode holder behind the TP4056, leads bent down, wired in."
+   "note": "The cell's side of the diode OR, the lowest in the diode pillar behind the TP4056, leads straight, wired in."
   },
   {
    "ref": "D2",
@@ -119,7 +119,7 @@
      "K"
     ]
    },
-   "note": "USB's side of the diode OR, the upper one in the diode holder behind the TP4056, leads bent up, wired in."
+   "note": "USB's side of the diode OR, the middle one in the diode pillar behind the TP4056, leads straight, wired in."
   },
   {
    "ref": "U4",
@@ -155,7 +155,7 @@
      "K"
     ]
    },
-   "note": "Joins the MT3608 to VSYS, soldered by its anode lead into the MT3608's VOUT+ hole (open it to 1.4 mm); the VSYS wire goes on its cathode lead. The Pico's own diode joins VBUS to VSYS, so whichever is higher runs it, and nothing flows back into the USB port."
+   "note": "Joins the MT3608 to VSYS: the top one in the diode pillar behind the TP4056, leads straight, wired from the MT3608's VOUT+ to the Pico's VSYS. The Pico's own diode joins VBUS to VSYS, so whichever is higher runs it, and nothing flows back into the USB port."
   },
   {
    "ref": "U1",
@@ -214,7 +214,7 @@
      "2"
     ]
    },
-   "note": "Limits the button's LED to a few mA from the 3.3 V GPIO; soldered inline on the button's LED+ leg. Check against the LED's rating."
+   "note": "Limits the button's LED to a few mA from the 3.3 V GPIO; it sits between the button's legs, to be wired to the LED+ leg. Check against the LED's rating."
   },
   {
    "ref": "SW1",

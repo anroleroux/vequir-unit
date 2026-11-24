@@ -10,6 +10,9 @@ outside goes into a tap hole in each. The +y
 skirt has eight square windows in a row, one for each LED of the WS2812
 stick (electronics/ws2812_stick_8), which is screwed, LEDs out, to two
 little pillars on the skirt's inside face with M1.2 x 6 countersunk screws.
+The -y skirt has a rectangular hole for the wiring board's 10-pin box
+header (J2), whose face touches the skirt's inside, so a ribbon cable's
+socket plugs in from outside.
 It is sized from the box and the stick, and the stick's place comes from
 the box, which lays out everything inside.
 
@@ -32,6 +35,9 @@ Assumptions where the description is silent:
   screw past the stick's board (through its 2.0 mm hole from behind);
 - each window is the LED (5 mm square) with 0.2 mm clearance all round,
   square through the skirt;
+- the header's hole is J2's shroud (20.3 mm up the height, 8.9 mm along
+  x) with 0.2 mm clearance all round, square through the -y skirt, in line
+  with the shroud (the box's header_* values);
 - modelled as installed, centred like the box: the skirt bottoms stand on
   z = 0 and the plate's underside is at seat_height = the box's h.
 """
@@ -47,6 +53,7 @@ block_t, block_w, block_depth = box.lid_block_t, box.lid_block_w, box.lid_block_
 clearance = box.lid_clearance  # between each block and the inside of its end wall
 block_tap = 3.5  # each block's tap hole, along x
 window_clearance = 0.2  # all round each LED, in its window
+header_clearance = 0.2  # all round J2's shroud, in its hole
 pillar = 2.4  # the stick's pillars, square
 tap_drill = 0.95  # M1.2 x 0.25
 tap_depth = 4.4  # from the pillar's face: the 4.08 mm of screw past the stick's board
@@ -102,7 +109,16 @@ taps = (
     .circle(tap_drill / 2)
     .extrude(-tap_depth)  # toward +y, into the pillar and the skirt
 )
-result = cover.union(blocks).cut(block_taps).cut(windows).union(pillars).cut(taps)
+# J2's hole, through the -y skirt
+hx0 = box.wb_back_x + box.wb.thickness - header_clearance
+hx1 = box.header_x1 + header_clearance
+hz0 = box.header_z0 - header_clearance
+hz1 = box.header_z1 + header_clearance
+header_hole = (cq.Workplane("XY", origin=(hx0, -box.b / 2 - t, hz0))
+               .box(hx1 - hx0, t, hz1 - hz0, centered=False))
+assert hx1 < block_outer - block_t, "the header's hole runs into a block"
+result = (cover.union(blocks).cut(block_taps).cut(windows).union(pillars).cut(taps)
+          .cut(header_hole))
 
 regions = {
     "top": result.faces(">Z"),
@@ -118,6 +134,9 @@ regions = {
     "stick_pillars": result.faces("%PLANE").filter(  # where the stick's board rests
         lambda f: f.normalAt().y < -0.999
         and abs(f.Center().y - (box.b / 2 - box.stick_standoff)) < 1e-6),
+    "header_hole": result.faces("%PLANE").filter(  # its four sides
+        lambda f: abs(f.Center().y + box.b / 2 + t / 2) < 1e-6 and abs(f.normalAt().y) < 1e-6
+        and hx0 - 1e-6 <= f.Center().x <= hx1 + 1e-6 and hz0 - 1e-6 <= f.Center().z <= hz1 + 1e-6),
     "tap_holes": result.faces("%CYLINDER").filter(  # the stick's
         lambda f: abs(f.BoundingBox().xlen - tap_drill) < 1e-3
         and abs(f.BoundingBox().ylen - tap_depth) < 1e-3),

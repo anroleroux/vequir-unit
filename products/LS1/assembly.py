@@ -9,46 +9,43 @@ its side in two slotted posts. At the front, the horizontal USB-C
 breakout stands on low supports with its front in the front wall's
 pocket, held down by the USB clamp (LS1/usb_clamp) and two M1.2 x 6
 countersunk screws. Right behind it the wiring board (LS1/wiring_board: the
-buzzer, the DS18B20, the transistor, resistors and capacitor on a
-perfboard) stands up, its parts facing the front wall and the buzzer at the
-top, screwed to the base's two posts with M1.2 x 6 countersunk screws.
-Behind that the TP4056 charger stands across the box in four corner grips,
-its parts facing backwards, and behind it D2 and D3 (1N5822) lie across the
-box one above the other in the base's diode holder, leads bent for the
-wires; D1 is soldered by its anode lead into the MT3608's VOUT+ hole. R6 is
-soldered inline at the LED stick's data input, and R2 on the button's LED+
-leg. The TSD-1166 LED push button goes through
+buzzer, the DS18B20, the transistor, resistors and capacitor packed toward
++y on a perfboard, and the 10-pin box header J2 at its -y edge, its face
+against the lid's -y skirt) stands up, its parts facing the front wall and
+the buzzer at the top. Behind that the TP4056 charger stands across the
+box, its parts facing backwards. Both boards stand in slots in the floor,
+held at the top by the board clamp (LS1/board_clamp), screwed with an
+M1.2 x 6 countersunk screw to the pillar between them. Behind the TP4056,
+D3, D2 and D1 (1N5822) lie across the box one above the other in the
+base's three-hole diode pillar, their leads straight and short. R6 is
+soldered inline at the LED stick's data input; R2 stands between the
+button's legs, not connected. The TSD-1166 LED push button goes through
 the back wall. The lid is seated on top, fastened by four M1.2 x 6
 countersunk screws through the end walls into its corner blocks, and the WS2812 8 x 1 stick is
 screwed to two pillars inside its +y skirt with M1.2 x 6 countersunk
-screws, each LED in its window, in front of the Pico. The bought-in parts
+screws, centred along the side, each LED behind its window. The bought-in parts
 come from vequir-standard.
 
 The base and the lid come from their own scripts through load_part, the
 rest through load_library, so the model follows any change to them.
 
 The summary's interference lists each screw against what it is screwed into
-(the base's posts, pillars and tabs, and the lid's pillars and blocks): a screw's 1.2 mm
+(the base's posts and pillars, and the lid's pillars and blocks): a screw's 1.2 mm
 shank forming its thread in a 0.95 mm tap hole, as intended, and marked as
 a thread.
 
 Assumptions where the description is silent:
 - the button is turned so its button points out through the back wall
   (-x), its legs into the box;
-- D1 lies on the MT3608's parts side, its anode lead through the VOUT+ hole,
-  its body out past the board's VOUT end (-x), its cathode lead free for the
-  VSYS wire: the diode formed with a long anode lead (base.d1_anode_lead),
-  so its body clears the Pico's -x post, turned half a turn about
-  (0, 1, -1), which takes its x to -x, its y to -z and its z (away from the
-  board) to -y;
-- D3 and D2 lie across the box, cathodes toward +y: D3 below as formed (its
-  leads bent down), turned a quarter turn about z (its x to +y); D2 above,
-  upside down (its leads bent up), turned half a turn about (1, 1, 0) (its x
-  to +y, its z to -z);
-- R6 and R2 lie along x as they are (the inline resistor is modelled along x);
+- D3, D2 and D1 lie across the box, cathodes toward +y: each the diode with
+  straight leads cut to 3 mm (diode.straight), turned a quarter turn about
+  z (its x to +y);
+- R6 lies along x as it is (the inline resistor is modelled along x); R2
+  is turned a quarter turn about y, so it stands along z;
 - the wiring board is turned 120 degrees about (-1, 1, -1): its x to -y, its
-  y to -z (row 0, the buzzer's, at the top), its parts' side to +x; its
-  screws lie along x, heads toward +x;
+  y to -z (row 0, the buzzer's, at the top), its parts' side to +x;
+- the board clamp is modelled in place, so it is added as it is; its screw
+  stands up, head on top, flush;
 - the TP4056 stands turned 120 degrees about (-1, -1, 1): its x (its USB-C
   end) to +y, its y to -z, its z (its parts' side) to -x;
 - the stick and the Pico are turned a quarter turn about x so their parts
@@ -71,7 +68,8 @@ button = load_library("electronics/tsd_1166_button")
 stick = load_library("electronics/ws2812_stick_8")
 pico = load_library("electronics/pico_2w")
 clamp = load_part("usb_clamp")  # its underside on z = 0
-diode = load_library("electronics/diode_1n5822")  # formed: the board's top on z = 0, anode at -x
+board_clamp = load_part("board_clamp")  # modelled in place
+diode = load_library("electronics/diode_1n5822")  # straight leads: body on z = 0, along x, cathode at +x
 inline = load_library("electronics/resistor_025w_inline")  # along x, centred
 screw = load_library("hardware/m1_2x6_countersunk")  # standing up: tip on z = 0
 
@@ -128,25 +126,21 @@ for i, (x, z) in enumerate(base.stick_holes, start=1):
     result.add(screw.result, name=f"stick_screw_{i}",
                loc=at(x, stick_head + screw.length, z, x_axis, 90), color=steel)
 
-for i, (y, z) in enumerate(base.wb_holes, start=1):  # along x, heads toward +x
-    result.add(board_screw.result, name=f"board_screw_{i}",
-               loc=at(base.wb_screw_top - board_screw.length, y, z, y_axis, 90), color=steel)
+# the board clamp over the pillar between the boards, and its screw
+result.add(board_clamp.result, name="board_clamp", color=cq.Color(0.36, 0.56, 0.78))
+result.add(board_screw.result, name="board_clamp_screw",
+           loc=at(base.pillar_x, base.pillar_y, base.bc_screw_top - board_screw.length), color=steel)
 
-# D3 and D2 in the diode holder, one above the other
-result.add(diode.result, name="d3_1n5822",
-           loc=at(base.diodes_x, 0, base.d3_z, cq.Vector(0, 0, 1), 90), color=black)
-result.add(diode.result, name="d2_1n5822",
-           loc=at(base.diodes_x, 0, base.d2_z, cq.Vector(1, 1, 0), 180), color=black)
+# D3, D2 and D1 in the diode pillar, one above the other, leads straight
+straight = diode.straight(base.diode_lead)
+for name, z in (("d3_1n5822", base.d3_z), ("d2_1n5822", base.d2_z), ("d1_1n5822", base.d1_z)):
+    result.add(straight, name=name, loc=at(base.diodes_x, 0, z, cq.Vector(0, 0, 1), 90), color=black)
 
-# R6 and R2, soldered inline
+# R6 inline at the stick; R2 standing up between the button's legs
 inline_tan = cq.Color(0.80, 0.70, 0.50)
 result.add(inline.result, name="r6_inline", loc=at(base.r6_x, base.r6_y, base.r6_z), color=inline_tan)
-result.add(inline.result, name="r2_inline", loc=at(base.r2_x, base.r2_y, base.r2_z), color=inline_tan)
-
-# D1, its anode lead long: that lead (at its own x = -d1_anode_x) in the VOUT+ hole
-result.add(diode.formed(anode_lead=base.d1_anode_lead), name="d1_1n5822",
-           loc=at(base.d1_x - base.d1_anode_x, base.d1_y, base.d1_z, cq.Vector(0, 1, -1), 180),
-           color=black)
+result.add(inline.result, name="r2_inline", loc=at(base.r2_x, base.r2_y, base.r2_z, y_axis, 90),
+           color=inline_tan)
 
 # the lid's screws, through the end walls from outside, heads flush
 for i, (x, y, z) in enumerate(base.lid_screws, start=1):
