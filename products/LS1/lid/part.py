@@ -165,13 +165,14 @@ regions = {
     "block_tap_holes": result.faces("%CYLINDER").filter(
         lambda f: abs(f.BoundingBox().xlen - block_tap) < 1e-3),
     "led_windows": result.faces("%PLANE").filter(  # the windows' four sides each
-        lambda f: abs(f.normalAt().y) < 1e-6 and box.b / 2 + 1e-6 < f.Center().y < box.b / 2 + t - 1e-6
+        lambda f: abs(f.normalAt().y) < 1e-6
+        and box.b / 2 + box.stick_inset + 1e-6 < f.Center().y < box.b / 2 + t - 1e-6  # past the pocket
         and abs(f.Center().z - window_z) < window),
     "stick_rests": result.faces("%PLANE").filter(  # where the stick's board rests
         lambda f: f.normalAt().y < -0.999
         and abs(f.Center().y - (box.b / 2 + box.stick_inset - box.stick_rest)) < 1e-6),
     "header_hole": result.faces("%PLANE").filter(  # its four sides
-        lambda f: abs(f.Center().y + box.b / 2 + t / 2) < 1e-6 and abs(f.normalAt().y) < 1e-6
+        lambda f: abs(f.BoundingBox().ymin + box.b / 2 + t) < 1e-6 and abs(f.normalAt().y) < 1e-6
         and hx0 - 1e-6 <= f.Center().x <= hx1 + 1e-6 and hz0 - 1e-6 <= f.Center().z <= hz1 + 1e-6),
     "header_shroud_top": result.faces("%PLANE").filter(  # its underside, over J2
         lambda f: f.normalAt().z < -0.999 and abs(f.Center().z - (jz1 + c)) < 1e-6),
