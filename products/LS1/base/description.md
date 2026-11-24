@@ -10,7 +10,7 @@ wall, along the -y side, with the single-cell BMS strip (Mantech 210454) on
 top of the cell.
 
 Behind the LED strip on the lid, a Raspberry Pi Pico 2 W is mounted on its
-side, fixed with M1.2 countersunk screws to pillars rising from the floor.
+side, fixed with M1.2 x 6 countersunk screws to pillars rising from the floor.
 Behind the Pico, the MT3608 boost converter is also mounted on its side, held
 by pillars.
 

@@ -9,7 +9,7 @@ inside them; an M1.2 x 6 countersunk screw through the end wall from the
 outside goes into a tap hole in each. The +y
 skirt has eight square windows in a row, one for each LED of the WS2812
 stick (electronics/ws2812_stick_8), which is screwed, LEDs out, to two
-little pillars on the skirt's inside face with M1.2 x 3 countersunk screws.
+little pillars on the skirt's inside face with M1.2 x 6 countersunk screws.
 It is sized from the box and the stick, and the stick's place comes from
 the box, which lays out everything inside.
 
@@ -23,12 +23,13 @@ Assumptions where the description is silent:
   box's countersunk hole;
 - the stick runs along x, in front of the Pico, its centre line 18 mm above
   the bottom (the box's stick_x, stick_y and stick_z), clear of the lips;
-- the two pillars are 2.4 mm square and 0.6 mm tall (the box's
-  stick_standoff), one under each of the stick's mounting holes, so its
-  0.5 mm capacitors clear the skirt and each LED reaches 1.0 mm into its
-  window; each has an M1.2 tap hole (0.95 mm) 2.0 mm deep, through the
-  pillar and 1.4 mm into the skirt, for an M1.2 x 3 screw through the
-  stick's 2.0 mm hole from behind;
+- the two pillars are 2.4 mm square and 1.9 mm tall (the box's
+  stick_standoff), one under each of the stick's mounting holes, tall
+  enough for an M1.2 x 6 screw: so its 0.5 mm capacitors clear the skirt
+  and each LED (1.6 mm) stops 0.3 mm short of its window; each has an M1.2
+  tap hole (0.95 mm) 4.4 mm deep, through the pillar and 2.5 mm into the
+  skirt, leaving 0.5 mm of the skirt outside it, for the 4.1 mm of the
+  screw past the stick's board (through its 2.0 mm hole from behind);
 - each window is the LED (5 mm square) with 0.2 mm clearance all round,
   square through the skirt;
 - modelled as installed, centred like the box: the skirt bottoms stand on
@@ -48,7 +49,7 @@ block_tap = 3.5  # each block's tap hole, along x
 window_clearance = 0.2  # all round each LED, in its window
 pillar = 2.4  # the stick's pillars, square
 tap_drill = 0.95  # M1.2 x 0.25
-tap_depth = 2.0  # from the pillar's face
+tap_depth = 4.4  # from the pillar's face: the 4.08 mm of screw past the stick's board
 stick_x, stick_y, stick_z = box.stick_x, box.stick_y, box.stick_z  # the stick's place
 
 length = box.l + 2 * a  # overall, along x

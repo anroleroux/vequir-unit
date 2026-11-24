@@ -4,7 +4,7 @@ The LS1: the base with a single 18650 holder and its cell (vequir-power's
 battery_holders/single_18650_holder) glued on the floor against the back
 wall along the -y side, the single-cell BMS strip on the cell. Along the +y
 side a Pico 2 W stands on its side, screwed to the base's four posts with
-M1.2 x 3 countersunk screws, and behind it the MT3608 boost board stands on
+M1.2 x 6 countersunk screws, and behind it the MT3608 boost board stands on
 its side in two slotted posts. At the front, the horizontal USB-C
 breakout stands on low supports with its front in the front wall's
 pocket, held down by the USB clamp (LS1/usb_clamp) and two M1.2 x 6
@@ -20,7 +20,7 @@ soldered inline at the LED stick's data input, and R2 on the button's LED+
 leg. The TSD-1166 LED push button goes through
 the back wall. The lid is seated on top, fastened by four M1.2 x 6
 countersunk screws through the end walls into its corner blocks, and the WS2812 8 x 1 stick is
-screwed to two pillars inside its +y skirt with M1.2 x 3 countersunk
+screwed to two pillars inside its +y skirt with M1.2 x 6 countersunk
 screws, each LED in its window, in front of the Pico. The bought-in parts
 come from vequir-standard.
 
@@ -37,8 +37,10 @@ Assumptions where the description is silent:
   (-x), its legs into the box;
 - D1 lies on the MT3608's parts side, its anode lead through the VOUT+ hole,
   its body out past the board's VOUT end (-x), its cathode lead free for the
-  VSYS wire: the formed diode turned half a turn about (0, 1, -1), which takes
-  its x to -x, its y to -z and its z (away from the board) to -y;
+  VSYS wire: the diode formed with a long anode lead (base.d1_anode_lead),
+  so its body clears the Pico's -x post, turned half a turn about
+  (0, 1, -1), which takes its x to -x, its y to -z and its z (away from the
+  board) to -y;
 - D3 and D2 lie across the box, cathodes toward +y: D3 below as formed (its
   leads bent down), turned a quarter turn about z (its x to +y); D2 above,
   upside down (its leads bent up), turned half a turn about (1, 1, 0) (its x
@@ -71,7 +73,7 @@ pico = load_library("electronics/pico_2w")
 clamp = load_part("usb_clamp")  # its underside on z = 0
 diode = load_library("electronics/diode_1n5822")  # formed: the board's top on z = 0, anode at -x
 inline = load_library("electronics/resistor_025w_inline")  # along x, centred
-screw = load_library("hardware/m1_2x3_countersunk")  # standing up: tip on z = 0
+screw = load_library("hardware/m1_2x6_countersunk")  # standing up: tip on z = 0
 
 board_green = cq.Color(0.15, 0.45, 0.30)
 board_blue = cq.Color(0.15, 0.30, 0.60)
@@ -141,9 +143,9 @@ inline_tan = cq.Color(0.80, 0.70, 0.50)
 result.add(inline.result, name="r6_inline", loc=at(base.r6_x, base.r6_y, base.r6_z), color=inline_tan)
 result.add(inline.result, name="r2_inline", loc=at(base.r2_x, base.r2_y, base.r2_z), color=inline_tan)
 
-# D1: its anode lead (at its own x = -pitch / 2) in the VOUT+ hole
-result.add(diode.result, name="d1_1n5822",
-           loc=at(base.d1_x - diode.pitch / 2, base.d1_y, base.d1_z, cq.Vector(0, 1, -1), 180),
+# D1, its anode lead long: that lead (at its own x = -d1_anode_x) in the VOUT+ hole
+result.add(diode.formed(anode_lead=base.d1_anode_lead), name="d1_1n5822",
+           loc=at(base.d1_x - base.d1_anode_x, base.d1_y, base.d1_z, cq.Vector(0, 1, -1), 180),
            color=black)
 
 # the lid's screws, through the end walls from outside, heads flush
