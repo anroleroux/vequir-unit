@@ -17,3 +17,6 @@ header, whose face touches the inside of the side, so a ribbon cable plugs
 in from outside. A shroud around the header box runs along its top and
 down its front and rear sides; it is open at the bottom so the lid can
 slide up off it.
+
+Each IR LED sits on a round base on the inside of the lid's side, square to
+its tilt, that its flange seats on.

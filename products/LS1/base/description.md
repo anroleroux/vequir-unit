@@ -11,7 +11,9 @@ of the cell.
 
 Behind the LED strip on the lid, a Raspberry Pi Pico 2 W is mounted on its
 side, 4 mm away from the switch, fixed with M1.2 x 6 countersunk screws to
-pillars rising from the floor at both ends.
+pillars rising from the floor at both ends. The light sensor's four range
+resistors are soldered directly on its pins (GP2, GP3, GP4 and a GND pin),
+pointing -y.
 Behind the Pico, the MT3608 boost converter is also mounted on its side,
 held by pillars, 4 mm away from the TP4056 and moved toward the battery.
 

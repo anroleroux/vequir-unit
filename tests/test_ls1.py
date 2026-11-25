@@ -45,6 +45,7 @@ def test_the_ls1_lid_has_a_window_for_each_led(tmp_path):
     assert lid["regions"]["stick_rests"]["count"] == 2  # in the stick's pocket
     assert lid["regions"]["header_shroud_top"]["count"] >= 1  # over J2
     assert lid["regions"]["lens_holes"]["count"] == 3  # two IR LEDs and the phototransistor
+    assert lid["regions"]["ir_seats"]["count"] == 2  # a round seat for each IR LED's flange
     assert lid["regions"]["header_hole"]["count"] == 4  # J2's hole: four sides
 
 
@@ -70,12 +71,14 @@ def test_the_ls1_assembly_places_everything_without_interference(tmp_path):
                      "usb_c_breakout", "tsd_1166_button", "ws2812_stick_8", "pico_2w",
                      "tp4056_charger", "wiring_board", "usb_clamp", "board_clamp", "board_clamp_screw",
                      "lid", "ir_led_1", "ir_led_2", "phototransistor"} | {f"pico_screw_{n}" for n in range(1, 5)} \
+        | {f"r{n}_inline" for n in (7, 8, 9, 10)} \
         | {f"clamp_screw_{n}" for n in range(1, 3)} | {f"lid_screw_{n}" for n in range(1, 5)} \
         | {"d1_1n5822", "d2_1n5822", "d3_1n5822", "r2_inline", "r6_inline"}
     touching = {(c["a"].split("/")[-1], c["b"].split("/")[-1]) for c in summary["contacts"]}
     assert ("ws2812_stick_8", "lid") in touching  # the stick on its rests in the skirt's pocket
     assert ("holder_18650_1s", "cell_18650") in touching  # the cell in its holder
-    assert ("phototransistor", "lid") in touching  # its flange against the skirt's inside
+    for lens in ("ir_led_1", "ir_led_2", "phototransistor"):
+        assert (lens, "lid") in touching  # its flange on the skirt's inside (the IR LEDs' on their seats)
     assert ("base", "tsd_1166_button") in touching  # the button body against the back wall
     assert ("base", "pico_2w") in touching  # the Pico on its posts
     assert ("base", "mt3608_boost") in touching  # the MT3608 in its slots

@@ -6,8 +6,9 @@ wire leads (power/holder_18650_1s) and its cell are glued on the floor
 against the back wall along the -y side, with the single-cell BMS strip
 on the cell. Along the +y side, behind the WS2812 stick on the lid, a
 Pico 2 W stands on its side, 4 mm clear of the button, screwed with four
-M1.2 x 6 countersunk screws to four posts; behind it the MT3608 boost
-board stands on its side in two slotted posts, 4 mm clear of
+M1.2 x 6 countersunk screws to four posts, the light sensor's four range
+resistors standing out of its back from pins 3 to 6; behind it the MT3608
+boost board stands on its side in two slotted posts, 4 mm clear of
 the TP4056 and close to the battery holder. At the front, the horizontal USB-C
 breakout stands on low supports with its front in a pocket in the front
 wall, 0.4 mm from the outside, held down by a clamp (LS1/usb_clamp) screwed
@@ -51,6 +52,13 @@ Assumptions where the description is silent:
   holes (0.95 mm, 5 mm deep, for the 4.7 mm of an M1.2 x 6 screw past the
   board) in line with its mounting holes; the stick is centred along the
   box (x = 0);
+- the light sensor's range resistors (1/4 W, leads cut to 3 mm) stand
+  straight out of the Pico's back (-y) from pins 4, 5, 6 and 3 (R7 1k on
+  GP2, R8 10k on GP3, R9 100k on GP4, R10 1M on GND, on the edge turned to
+  the top), each one's near lead through its pin's hole, flush with the
+  Pico's parts side; their free ends are wired together to the sense node
+  (and GP27); they pass 0.5 mm over its -x posts and end 1.1 mm short of
+  the holder;
 - the MT3608 stands on the floor, its +x end 4 mm clear of the TP4056's
   parts; each of its two
   posts is 11.5 mm tall and holds one end of the board in a vertical slot
@@ -150,6 +158,10 @@ stick_inset = 1.0  # the stick's pocket in the lid's +y skirt, deep
 stick_rest = 0.6  # its two rests in the pocket: the board's LED side off the pocket's floor
 pico_gap = 4.0  # the Pico's -x end (its USB), clear of the button's legs
 mt_holder_gap = 0.5  # the MT3608's parts, clear of the holder's side
+# the light sensor's range resistors, each standing -y out of a Pico pin: R7
+# 1k on GP2 (pin 4), R8 10k on GP3 (pin 5), R9 100k on GP4 (pin 6) and R10 1M
+# on GND (pin 3); their free ends are wired together to the sense node
+pico_res = {"R7": 4, "R8": 5, "R9": 6, "R10": 3}
 post_mt_gap = 0.3  # the Pico's +x posts' backs, clear of the MT3608's board
 lens_gap = 0.3  # each LED's and the phototransistor's flange, clear of the stick's pocket
 ir_tilt = 10.0  # degrees: each IR LED turned away from the phototransistor
@@ -375,6 +387,13 @@ pico_z = wall + pico_lift + pico.width / 2  # its centre line
 pico_holes = [(pico_x + x, pico_z - y) for x, y in pico_mounts]  # (x, z), turned about x
 post_xs = [pico_x + sx * pico.mount_x / 2 for sx in (-1, 1)]
 post_top = pico_z + pico.mount_y / 2 + post_above
+# the range resistors: pin 1 is at the Pico's USB end, on the row along its
+# -y edge, turned to the top; each near lead through its pin's hole, flush
+# with the parts side
+pico_res_at = {ref: (pico_x + pico.pin_x[n - 1], pico_z + pico.pin_rows / 2) for ref, n in pico_res.items()}  # (x, z)
+pico_res_y = pico_y + pico.pcb_t - inline.length / 2  # their centres
+assert min(z for _, z in pico_res_at.values()) - inline.body_d / 2 > post_top + 0.3, \
+    "the Pico's resistors touch its -x posts"
 
 # the MT3608 on its side, parts facing -y, in its slotted posts, its +x end
 # mt_gap clear of the TP4056's parts
@@ -383,6 +402,7 @@ mt_y = holder_edge + mt_holder_gap + boost.height  # its underside's plane (the 
 # the Pico's +x posts stop short of the MT3608's board, which is behind them
 post_ds = [post_d, min(post_d, pico_y - mt_y - post_mt_gap)]
 assert post_ds[1] >= tap_depth, "no room behind the Pico for its +x posts' tap holes"
+assert pico_res_y - inline.length / 2 > holder_edge + 0.5, "the Pico's resistors reach the holder"
 mt_z = wall + boost.width / 2  # standing on the floor
 slot_w = boost.pcb_t + slot_clearance
 slot_y = mt_y - boost.pcb_t / 2  # the slot's centre line

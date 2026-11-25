@@ -4,7 +4,9 @@ The LS1: the base with a bought single 18650 holder (power/holder_18650_1s,
 wire leads) and its cell glued on the floor against the back wall along
 the -y side, the single-cell BMS strip on the cell. Along the +y side a
 Pico 2 W stands on its side, 4 mm clear of the button, screwed to the
-base's four posts with M1.2 x 6 countersunk screws; behind it the MT3608 boost
+base's four posts with M1.2 x 6 countersunk screws, the light sensor's
+range resistors (R7 to R10) standing out of its back from pins 3 to 6;
+behind it the MT3608 boost
 board stands on its side in two slotted posts, 4 mm clear of the TP4056,
 close to the holder. At the front, the horizontal USB-C
 breakout stands on low supports with its front in the front wall's
@@ -46,7 +48,8 @@ Assumptions where the description is silent:
   straight leads cut to 3 mm (diode.straight), turned a quarter turn about
   z (its x to +y);
 - R6 lies along x as it is (the inline resistor is modelled along x); R2 is
-  turned a quarter turn about y, so it stands along z; the IR LEDs and the
+  turned a quarter turn about y, so it stands along z; the range resistors a
+  quarter turn about z, along y; the IR LEDs and the
   phototransistor a quarter turn about x, their domes (+z) to +y, and the
   IR LEDs then 10 degrees about z, away from the phototransistor;
 - the wiring board is turned 120 degrees about (-1, 1, -1): its x to -y, its
@@ -151,6 +154,12 @@ inline_tan = cq.Color(0.80, 0.70, 0.50)
 result.add(inline.result, name="r6_inline", loc=at(base.r6_x, base.r6_y, base.r6_z), color=inline_tan)
 result.add(inline.result, name="r2_inline", loc=at(base.r2_x, base.r2_y, base.r2_z, y_axis, 90),
            color=inline_tan)
+
+# the light sensor's range resistors on the Pico's pins 3 to 6, standing -y
+# out of its back (a quarter turn about z takes the resistor's x to y)
+for ref, (x, z) in base.pico_res_at.items():
+    result.add(inline.result, name=f"{ref.lower()}_inline", loc=at(x, base.pico_res_y, z, cq.Vector(0, 0, 1), 90),
+               color=inline_tan)
 
 # the phototransistor above the stick and an IR LED above each end LED,
 # through the lid's +y skirt: a quarter turn about x takes each one's dome

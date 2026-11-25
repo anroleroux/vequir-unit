@@ -44,8 +44,10 @@ Assumptions where the description is silent:
   flange is 0.3 mm above the pocket, over the stick's middle; the IR LEDs
   are at the same height, each over one of the stick's end LEDs, turned
   10 degrees about z away from the phototransistor, so their holes run
-  slant through the skirt along their axes and only the outer rim of each
-  flange touches the skirt (the box's ir_* and photo_* values);
+  slant through the skirt along their axes; each sits on a round seat on
+  the skirt's inside, 0.2 mm wider than its flange and square to its axis,
+  2 mm deep along it, so its whole flange rests on it (the box's ir_* and
+  photo_* values);
 - each window is the LED (5 mm square) with 0.2 mm clearance all round,
   square through the skirt;
 - the header's hole is J2's shroud (20.3 mm up the height, 8.9 mm along
@@ -77,6 +79,8 @@ header_clearance = 0.2  # all round J2's shroud, in its hole
 tap_drill = 0.95  # M1.2 x 0.25, the blocks' tap holes
 rest = 2.4  # the stick's rests in its pocket, square
 lens_clearance = 0.1  # radial, round each LED's and the phototransistor's body
+seat_margin = 0.2  # each IR LED's round seat, past its flange's rim
+seat_depth = 2.0  # along its axis, from its face out into the skirt
 shroud_wall = 1.2  # J2's shroud
 shroud_clearance = 0.2  # round J2, and round what the shroud passes over
 stick_x, stick_y, stick_z = box.stick_x, box.stick_y, box.stick_z  # the stick's place
@@ -131,12 +135,23 @@ lens_holes = (cq.Workplane("XZ", origin=(0, box.b / 2, 0))  # normal -y: extrude
               .pushPoints([(box.photo_x, box.photo_z)])
               .circle(hole_r)
               .extrude(-t))  # outward, through the skirt
+# and a round seat for each IR LED on the skirt's inside: a short boss square
+# to its tilted axis, its face where the flange's top sits, reaching out
+# into the skirt, so the whole flange rests on it
+ir_seats = None
 for x, angle in zip(box.ir_xs, box.ir_angles):
     a = math.radians(angle)
     axis = cq.Vector(-math.sin(a), math.cos(a), 0)  # the LED's axis, its dome outward
-    start = cq.Vector(x, box.ir_face_y, box.ir_z) - axis * 0.5
+    face = cq.Vector(x, box.ir_face_y, box.ir_z)  # the flange's top centre
+    start = face - axis * 0.5
     hole = cq.Solid.makeCylinder(hole_r, (t + 1.0) / math.cos(a) + 0.5, start, axis)
     lens_holes = lens_holes.union(cq.Workplane("XY").add(hole))
+    seat = cq.Workplane("XY").add(cq.Solid.makeCylinder(
+        box.ir_led.flange_d / 2 + seat_margin, seat_depth, face, axis))
+    ir_seats = seat if ir_seats is None else ir_seats.union(seat)
+seat_r = box.ir_led.flange_d / 2 + seat_margin
+assert box.ir_z - seat_r > box.stick_pocket[0][3], "an IR LED's seat runs into the stick's pocket"
+assert box.ir_z + seat_r < seat_height, "an IR LED's seat reaches the plate"
 rests = (
     cq.Workplane("XZ", origin=(0, box.b / 2 + box.stick_inset, 0))  # normal -y: toward the stick
     .pushPoints(box.stick_holes)
@@ -177,7 +192,8 @@ keep_out = (slab(box.wb_back_x - c, jx0 + c, board_edge - c, sy1 + c, jz0, heigh
 shroud = shroud.cut(keep_out)
 assert jz1 + c + w < seat_height, "J2's shroud reaches the plate"
 
-result = (cover.union(blocks).cut(block_taps).cut(windows).cut(pocket).union(rests).cut(lens_holes)
+result = (cover.union(blocks).cut(block_taps).cut(windows).cut(pocket).union(rests).union(ir_seats)
+          .cut(lens_holes)
           .cut(header_hole).union(shroud))
 
 regions = {
@@ -195,6 +211,9 @@ regions = {
     "lens_holes": result.faces("%CYLINDER").filter(  # the IR LEDs' and the phototransistor's
         lambda f: abs(f.BoundingBox().zlen - 2 * hole_r) < 1e-3
         and box.b / 2 - 1e-3 < f.Center().y < box.b / 2 + t + 1e-3),
+    "ir_seats": result.faces("%PLANE").filter(  # where the IR LEDs' flanges rest
+        lambda f: abs(abs(f.normalAt().x) - math.sin(math.radians(box.ir_tilt))) < 1e-3
+        and f.normalAt().y < -0.9),
     "stick_rests": result.faces("%PLANE").filter(  # where the stick's board rests
         lambda f: f.normalAt().y < -0.999
         and abs(f.Center().y - (box.b / 2 + box.stick_inset - box.stick_rest)) < 1e-6),
