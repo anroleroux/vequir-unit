@@ -10,7 +10,10 @@ outside goes into a tap hole in each. The +y skirt has eight square
 windows in a row, one for each LED of the WS2812 stick
 (electronics/ws2812_stick_8), which sits, LEDs out, in a shallow pocket in
 the skirt's inside face on two little rests, unscrewed for now; R6, inline
-at its data input, lies in the pocket too. The -y skirt has a rectangular hole for the
+at its data input, stands up in the pocket at its -x end. A 5 mm IR LED at
+each end of the stick and the phototransistor above its middle go through
+round holes in the skirt, their flanges against its inside, their domes
+out. The -y skirt has a rectangular hole for the
 wiring board's 10-pin box header (J2), whose face touches the skirt's
 inside, so a ribbon cable's socket plugs in from outside; a shroud on the
 skirt's inside runs over the header's top and down its front (+x) and
@@ -28,13 +31,19 @@ Assumptions where the description is silent:
   box's countersunk hole;
 - the stick runs along x, in front of the Pico, its centre line 18 mm above
   the bottom (the box's stick_x, stick_y and stick_z), clear of the lips;
-- the pocket is the stick's board (and R6 beyond its -x end) with 0.2 mm
-  clearance all round, 1.0 mm deep into the 3 mm skirt (the box's
+- the pocket is the stick's board, and R6 standing beyond its -x end (the
+  box's stick_pocket rectangles), with 0.2 mm clearance all round, 1.0 mm
+  deep into the 3 mm skirt (the box's
   stick_inset); in it, a rest 2.4 mm square and 0.6 mm tall (stick_rest)
   under each of the stick's mounting holes holds its LED side off the
   pocket's floor, so its 0.5 mm capacitors clear it and its board is
   0.4 mm into the pocket, its LEDs 1.0 mm into their windows; the stick is
   not screwed for now (glue it, or the holes are there for later);
+- the IR LEDs' and the phototransistor's holes are their 5 mm bodies with
+  0.1 mm clearance all round, through the skirt; the IR LEDs are level
+  with the stick, their flanges 0.3 mm past the pocket's ends; the
+  phototransistor's flange is 0.3 mm above the pocket, over the stick's
+  middle (the box's ir_* and photo_* values);
 - each window is the LED (5 mm square) with 0.2 mm clearance all round,
   square through the skirt;
 - the header's hole is J2's shroud (20.3 mm up the height, 8.9 mm along
@@ -63,7 +72,7 @@ window_clearance = 0.2  # all round each LED, in its window
 header_clearance = 0.2  # all round J2's shroud, in its hole
 tap_drill = 0.95  # M1.2 x 0.25, the blocks' tap holes
 rest = 2.4  # the stick's rests in its pocket, square
-pocket_clearance = 0.2  # round the stick and R6, in the pocket
+lens_clearance = 0.1  # radial, round each LED's and the phototransistor's body
 shroud_wall = 1.2  # J2's shroud
 shroud_clearance = 0.2  # round J2, and round what the shroud passes over
 stick_x, stick_y, stick_z = box.stick_x, box.stick_y, box.stick_z  # the stick's place
@@ -107,12 +116,16 @@ windows = (
     .extrude(-t)  # outward, through the +y skirt
 )
 # the stick's pocket in the +y skirt (and R6's, at its -x end), and its rests
-pocket_x0 = box.r6_x - box.inline.length / 2 - pocket_clearance
-pocket_x1 = stick_x + stick.length / 2 + pocket_clearance
-pocket_z0 = stick_z - stick.width / 2 - pocket_clearance
-pocket_z1 = stick_z + stick.width / 2 + pocket_clearance
-pocket = (cq.Workplane("XY", origin=(pocket_x0, box.b / 2, pocket_z0))
-          .box(pocket_x1 - pocket_x0, box.stick_inset, pocket_z1 - pocket_z0, centered=False))
+pocket = None
+for x0, x1, z0, z1 in box.stick_pocket:
+    r = cq.Workplane("XY", origin=(x0, box.b / 2, z0)).box(x1 - x0, box.stick_inset, z1 - z0, centered=False)
+    pocket = r if pocket is None else pocket.union(r)
+# the IR LEDs' and the phototransistor's holes through the +y skirt
+lens_points = [(-box.ir_x, box.ir_z), (box.ir_x, box.ir_z), (box.photo_x, box.photo_z)]
+lens_holes = (cq.Workplane("XZ", origin=(0, box.b / 2, 0))  # normal -y: extrude toward -y
+              .pushPoints(lens_points)
+              .circle(box.ir_led.body_d / 2 + lens_clearance)
+              .extrude(-t))  # outward, through the skirt
 rests = (
     cq.Workplane("XZ", origin=(0, box.b / 2 + box.stick_inset, 0))  # normal -y: toward the stick
     .pushPoints(box.stick_holes)
@@ -153,7 +166,7 @@ keep_out = (slab(box.wb_back_x - c, jx0 + c, board_edge - c, sy1 + c, jz0, heigh
 shroud = shroud.cut(keep_out)
 assert jz1 + c + w < seat_height, "J2's shroud reaches the plate"
 
-result = (cover.union(blocks).cut(block_taps).cut(windows).cut(pocket).union(rests)
+result = (cover.union(blocks).cut(block_taps).cut(windows).cut(pocket).union(rests).cut(lens_holes)
           .cut(header_hole).union(shroud))
 
 regions = {
@@ -168,6 +181,9 @@ regions = {
         lambda f: abs(f.normalAt().y) < 1e-6
         and box.b / 2 + box.stick_inset + 1e-6 < f.Center().y < box.b / 2 + t - 1e-6  # past the pocket
         and abs(f.Center().z - window_z) < window),
+    "lens_holes": result.faces("%CYLINDER").filter(  # the IR LEDs' and the phototransistor's
+        lambda f: abs(f.BoundingBox().ylen - t) < 1e-3
+        and abs(f.BoundingBox().xlen - (box.ir_led.body_d + 2 * lens_clearance)) < 1e-3),
     "stick_rests": result.faces("%PLANE").filter(  # where the stick's board rests
         lambda f: f.normalAt().y < -0.999
         and abs(f.Center().y - (box.b / 2 + box.stick_inset - box.stick_rest)) < 1e-6),

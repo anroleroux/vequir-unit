@@ -11,9 +11,10 @@ of the cell.
 
 Behind the LED strip on the lid, a Raspberry Pi Pico 2 W is mounted on its
 side, 4 mm away from the switch, fixed with M1.2 x 6 countersunk screws to
-pillars rising from the floor at its -x end (the +x side mount is left off
-for now). Behind the Pico, the MT3608 boost converter is also mounted on its
-side, held by pillars, 4 mm away from the TP4056.
+pillars rising from the floor at both ends. Four resistors are soldered
+directly on its pins 2 to 5 (three GPIO pins and a GND pin), pointing -y.
+Behind the Pico, the MT3608 boost converter is also mounted on its side,
+held by pillars, 4 mm away from the TP4056 and moved toward the battery.
 
 At the front, the horizontal USB-C breakout is raised a little and moved
 forward into the front wall, in an inset that leaves its connector 0.4 mm
@@ -48,3 +49,7 @@ LED's resistor stands between the button's legs, in line with the button
 along z, not connected (hovering in the air).
 
 The LED stick on the lid is centred along the box's side.
+
+On the lid, a 5 mm IR LED sits at each end of the LED stick and a 5 mm
+phototransistor (Micro Robotics BP0334) above the middle of the stick,
+each through a hole in the lid's side.

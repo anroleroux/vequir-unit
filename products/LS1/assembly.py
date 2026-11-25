@@ -4,9 +4,10 @@ The LS1: the base with a bought single 18650 holder (power/holder_18650_1s,
 wire leads) and its cell glued on the floor against the back wall along
 the -y side, the single-cell BMS strip on the cell. Along the +y side a
 Pico 2 W stands on its side, 4 mm clear of the button, screwed to the
-base's two posts at its -x end with M1.2 x 6 countersunk screws (its +x
-posts are left off for now), and behind it the MT3608 boost board stands
-on its side in two slotted posts, 4 mm clear of the TP4056. At the front, the horizontal USB-C
+base's four posts with M1.2 x 6 countersunk screws, four resistors
+standing out of its back from pins 2 to 5; behind it the MT3608 boost
+board stands on its side in two slotted posts, 4 mm clear of the TP4056,
+close to the holder. At the front, the horizontal USB-C
 breakout stands on low supports with its front in the front wall's
 pocket, held down by the USB clamp (LS1/usb_clamp) and two M1.2 x 6
 countersunk screws. Right behind it the wiring board (LS1/wiring_board: the
@@ -25,7 +26,9 @@ button's legs, not connected. The TSD-1166 LED push button goes through
 the back wall. The lid is seated on top, fastened by four M1.2 x 6
 countersunk screws through the end walls into its corner blocks; the
 WS2812 8 x 1 stick sits in a shallow pocket inside its +y skirt on two
-rests, centred along the side, each LED in its window, unscrewed for now;
+rests, centred along the side, each LED in its window, unscrewed for now,
+with an IR LED at each end and the phototransistor above it, their domes
+out through the skirt;
 a shroud inside its -y skirt covers J2's top and sides. The bought-in parts
 come from vequir-standard.
 
@@ -43,8 +46,10 @@ Assumptions where the description is silent:
 - D3, D2 and D1 lie across the box, cathodes toward +y: each the diode with
   straight leads cut to 3 mm (diode.straight), turned a quarter turn about
   z (its x to +y);
-- R6 lies along x as it is (the inline resistor is modelled along x); R2
-  is turned a quarter turn about y, so it stands along z;
+- R6 and R2 are turned a quarter turn about y, so they stand along z (the
+  inline resistor is modelled along x); the Pico's resistors a quarter
+  turn about z, along y; the IR LEDs and the phototransistor a quarter
+  turn about x, their domes (+z) to +y;
 - the wiring board is turned 120 degrees about (-1, 1, -1): its x to -y, its
   y to -z (row 0, the buzzer's, at the top), its parts' side to +x;
 - the board clamp is modelled in place, so it is added as it is; its screw
@@ -62,6 +67,8 @@ base = load_part("base")  # floor and end walls at +-x, standing on z = 0; the l
 lid = load_part("lid")  # modelled as installed: skirts stand on z = 0
 holder = load_library("power/holder_18650_1s")
 cell = load_library("power/cell_18650")  # standing up: negative end on z = 0
+ir_led = load_library("electronics/led_ir_5mm")  # flange's underside on z = 0, dome toward +z
+photo = load_library("electronics/phototransistor_5mm")
 boost = load_library("power/mt3608_boost")
 bms = load_library("power/bms_1s_3a")
 charger = load_library("power/tp4056_charger")
@@ -140,9 +147,25 @@ for name, z in (("d3_1n5822", base.d3_z), ("d2_1n5822", base.d2_z), ("d1_1n5822"
 
 # R6 inline at the stick; R2 standing up between the button's legs
 inline_tan = cq.Color(0.80, 0.70, 0.50)
-result.add(inline.result, name="r6_inline", loc=at(base.r6_x, base.r6_y, base.r6_z), color=inline_tan)
+result.add(inline.result, name="r6_inline", loc=at(base.r6_x, base.r6_y, base.r6_z, y_axis, 90),
+           color=inline_tan)
 result.add(inline.result, name="r2_inline", loc=at(base.r2_x, base.r2_y, base.r2_z, y_axis, 90),
            color=inline_tan)
+
+# four resistors on the Pico's pins 2 to 5 (GP1, GND, GP2, GP3), standing
+# -y out of its back (a quarter turn about z takes the resistor's x to y)
+for n, (x, z) in zip(base.pico_res_pins, base.pico_res):
+    result.add(inline.result, name=f"r_pico_pin{n}", loc=at(x, base.pico_res_y, z, cq.Vector(0, 0, 1), 90),
+               color=inline_tan)
+
+# the IR LEDs at the stick's ends and the phototransistor above it, through
+# the lid's +y skirt: a quarter turn about x takes each one's dome (+z) to +y
+clear_lens = cq.Color(0.75, 0.80, 0.90)
+for name, x in (("ir_led_1", -base.ir_x), ("ir_led_2", base.ir_x)):
+    result.add(ir_led.result, name=name, loc=at(x, base.lens_y, base.ir_z, x_axis, -90),
+               color=cq.Color(0.30, 0.30, 0.45))
+result.add(photo.result, name="phototransistor", loc=at(base.photo_x, base.lens_y, base.photo_z, x_axis, -90),
+           color=clear_lens)
 
 # the lid's screws, through the end walls from outside, heads flush
 for i, (x, y, z) in enumerate(base.lid_screws, start=1):

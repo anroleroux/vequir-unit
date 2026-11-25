@@ -27,7 +27,7 @@ def test_the_ls1_base_has_its_usb_c_and_button_holes(tmp_path):
     assert base["bounding_box"]["size"][2] == pytest.approx(30.0)
     assert base["regions"]["usbc_hole"]["count"] == 4
     assert base["regions"]["button_hole"]["count"] == 1
-    assert base["regions"]["pico_tap_holes"]["count"] == 2  # the Pico's two -x posts, for now
+    assert base["regions"]["pico_tap_holes"]["count"] == 4  # the Pico's four posts
     assert base["regions"]["mt_slots"]["count"] == 2  # the MT3608's two slotted posts
     assert base["regions"]["usbc_pocket"]["count"] == 1  # the USB-C board's inset
     assert base["regions"]["board_slots"]["count"] == 2  # the wiring board's and the TP4056's
@@ -44,6 +44,7 @@ def test_the_ls1_lid_has_a_window_for_each_led(tmp_path):
     assert lid["regions"]["block_tap_holes"]["count"] == 4
     assert lid["regions"]["stick_rests"]["count"] == 2  # in the stick's pocket
     assert lid["regions"]["header_shroud_top"]["count"] >= 1  # over J2
+    assert lid["regions"]["lens_holes"]["count"] == 3  # two IR LEDs and the phototransistor
     assert lid["regions"]["header_hole"]["count"] == 4  # J2's hole: four sides
 
 
@@ -54,12 +55,12 @@ def test_the_board_clamp_holds_both_boards(tmp_path):
 
 
 def test_the_ls1_assembly_places_everything_without_interference(tmp_path):
-    """The only overlaps are the M1.2 screws forming their threads: two in
+    """The only overlaps are the M1.2 screws forming their threads: four in
     the base's Pico posts, two in its USB clamp posts, one in the board
     clamp's pillar and four in the lid's corner blocks."""
     summary = _summary(build_part(LS1 / "assembly.py", tmp_path / "out"))
     pairs = sorted((i["a"].split("/")[-1], i["b"].split("/")[-1]) for i in summary["interference"])
-    assert pairs == sorted([("base", f"pico_screw_{n}") for n in range(1, 3)]
+    assert pairs == sorted([("base", f"pico_screw_{n}") for n in range(1, 5)]
                            + [("base", "board_clamp_screw")]
                            + [("base", f"clamp_screw_{n}") for n in range(1, 3)]
                            + [(f"lid_screw_{n}", "lid") for n in range(1, 5)])
@@ -68,12 +69,15 @@ def test_the_ls1_assembly_places_everything_without_interference(tmp_path):
     assert names == {"base", "holder_18650_1s", "cell_18650", "mt3608_boost", "bms_1s_3a",
                      "usb_c_breakout", "tsd_1166_button", "ws2812_stick_8", "pico_2w",
                      "tp4056_charger", "wiring_board", "usb_clamp", "board_clamp", "board_clamp_screw",
-                     "lid"} | {f"pico_screw_{n}" for n in range(1, 3)} \
+                     "lid", "ir_led_1", "ir_led_2", "phototransistor"} | {f"pico_screw_{n}" for n in range(1, 5)} \
+        | {f"r_pico_pin{n}" for n in (2, 3, 4, 5)} \
         | {f"clamp_screw_{n}" for n in range(1, 3)} | {f"lid_screw_{n}" for n in range(1, 5)} \
         | {"d1_1n5822", "d2_1n5822", "d3_1n5822", "r2_inline", "r6_inline"}
     touching = {(c["a"].split("/")[-1], c["b"].split("/")[-1]) for c in summary["contacts"]}
     assert ("ws2812_stick_8", "lid") in touching  # the stick on its rests in the skirt's pocket
     assert ("holder_18650_1s", "cell_18650") in touching  # the cell in its holder
+    for lens in ("ir_led_1", "ir_led_2", "phototransistor"):
+        assert (lens, "lid") in touching  # its flange against the skirt's inside
     assert ("base", "tsd_1166_button") in touching  # the button body against the back wall
     assert ("base", "pico_2w") in touching  # the Pico on its posts
     assert ("base", "mt3608_boost") in touching  # the MT3608 in its slots
