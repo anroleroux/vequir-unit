@@ -27,8 +27,8 @@ the back wall. The lid is seated on top, fastened by four M1.2 x 6
 countersunk screws through the end walls into its corner blocks; the
 WS2812 8 x 1 stick sits in a shallow pocket inside its +y skirt on two
 rests, centred along the side, each LED in its window, unscrewed for now,
-with an IR LED at each end and the phototransistor above it, their domes
-out through the skirt;
+with the phototransistor above its middle and an IR LED above each end
+LED, turned 10 degrees outward, their domes out through the skirt;
 a shroud inside its -y skirt covers J2's top and sides. The bought-in parts
 come from vequir-standard.
 
@@ -46,10 +46,11 @@ Assumptions where the description is silent:
 - D3, D2 and D1 lie across the box, cathodes toward +y: each the diode with
   straight leads cut to 3 mm (diode.straight), turned a quarter turn about
   z (its x to +y);
-- R6 and R2 are turned a quarter turn about y, so they stand along z (the
-  inline resistor is modelled along x); the Pico's resistors a quarter
-  turn about z, along y; the IR LEDs and the phototransistor a quarter
-  turn about x, their domes (+z) to +y;
+- R6 lies along x as it is (the inline resistor is modelled along x); R2 is
+  turned a quarter turn about y, so it stands along z; the Pico's
+  resistors a quarter turn about z, along y; the IR LEDs and the
+  phototransistor a quarter turn about x, their domes (+z) to +y, and the
+  IR LEDs then 10 degrees about z, away from the phototransistor;
 - the wiring board is turned 120 degrees about (-1, 1, -1): its x to -y, its
   y to -z (row 0, the buzzer's, at the top), its parts' side to +x;
 - the board clamp is modelled in place, so it is added as it is; its screw
@@ -61,6 +62,8 @@ Assumptions where the description is silent:
   facing -y toward the holder, its VIN end at +x;
 - wires, solder and glue are not modelled.
 """
+import math
+
 import cadquery as cq
 
 base = load_part("base")  # floor and end walls at +-x, standing on z = 0; the layout
@@ -147,8 +150,7 @@ for name, z in (("d3_1n5822", base.d3_z), ("d2_1n5822", base.d2_z), ("d1_1n5822"
 
 # R6 inline at the stick; R2 standing up between the button's legs
 inline_tan = cq.Color(0.80, 0.70, 0.50)
-result.add(inline.result, name="r6_inline", loc=at(base.r6_x, base.r6_y, base.r6_z, y_axis, 90),
-           color=inline_tan)
+result.add(inline.result, name="r6_inline", loc=at(base.r6_x, base.r6_y, base.r6_z), color=inline_tan)
 result.add(inline.result, name="r2_inline", loc=at(base.r2_x, base.r2_y, base.r2_z, y_axis, 90),
            color=inline_tan)
 
@@ -158,12 +160,18 @@ for n, (x, z) in zip(base.pico_res_pins, base.pico_res):
     result.add(inline.result, name=f"r_pico_pin{n}", loc=at(x, base.pico_res_y, z, cq.Vector(0, 0, 1), 90),
                color=inline_tan)
 
-# the IR LEDs at the stick's ends and the phototransistor above it, through
-# the lid's +y skirt: a quarter turn about x takes each one's dome (+z) to +y
+# the phototransistor above the stick and an IR LED above each end LED,
+# through the lid's +y skirt: a quarter turn about x takes each one's dome
+# (+z) to +y; each IR LED is then turned about z, away from the
+# phototransistor, its flange's top centred at (x, ir_face_y, ir_z)
 clear_lens = cq.Color(0.75, 0.80, 0.90)
-for name, x in (("ir_led_1", -base.ir_x), ("ir_led_2", base.ir_x)):
-    result.add(ir_led.result, name=name, loc=at(x, base.lens_y, base.ir_z, x_axis, -90),
-               color=cq.Color(0.30, 0.30, 0.45))
+for i, (x, angle) in enumerate(zip(base.ir_xs, base.ir_angles), start=1):
+    a = math.radians(angle)
+    axis = cq.Vector(-math.sin(a), math.cos(a), 0)
+    origin = cq.Vector(x, base.ir_face_y, base.ir_z) - axis * ir_led.flange_t  # the flange's underside
+    shape = (ir_led.result.rotate((0, 0, 0), (1, 0, 0), -90).rotate((0, 0, 0), (0, 0, 1), angle)
+             .translate(origin))
+    result.add(shape, name=f"ir_led_{i}", color=cq.Color(0.30, 0.30, 0.45))
 result.add(photo.result, name="phototransistor", loc=at(base.photo_x, base.lens_y, base.photo_z, x_axis, -90),
            color=clear_lens)
 

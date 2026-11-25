@@ -76,8 +76,7 @@ def test_the_ls1_assembly_places_everything_without_interference(tmp_path):
     touching = {(c["a"].split("/")[-1], c["b"].split("/")[-1]) for c in summary["contacts"]}
     assert ("ws2812_stick_8", "lid") in touching  # the stick on its rests in the skirt's pocket
     assert ("holder_18650_1s", "cell_18650") in touching  # the cell in its holder
-    for lens in ("ir_led_1", "ir_led_2", "phototransistor"):
-        assert (lens, "lid") in touching  # its flange against the skirt's inside
+    assert ("phototransistor", "lid") in touching  # its flange against the skirt's inside
     assert ("base", "tsd_1166_button") in touching  # the button body against the back wall
     assert ("base", "pico_2w") in touching  # the Pico on its posts
     assert ("base", "mt3608_boost") in touching  # the MT3608 in its slots
@@ -89,6 +88,10 @@ def test_the_ls1_assembly_places_everything_without_interference(tmp_path):
     assert ("usb_c_breakout", "usb_clamp") in touching  # the clamp pressing on the receptacle
     assert ("base", "usb_clamp") in touching  # and screwed to its posts
     comps = {c["name"].split("/")[-1]: c for c in summary["components"]}
+    # the IR LEDs: above the stick's end LEDs, level with the phototransistor
+    ph = comps["phototransistor"]
+    for name in ("ir_led_1", "ir_led_2"):
+        assert comps[name]["bounding_box_min"][2] == pytest.approx(ph["bounding_box_min"][2])
     front = comps["base"]["bounding_box_max"][0]
     assert comps["usb_c_breakout"]["bounding_box_max"][0] == pytest.approx(front - 0.4)  # in the wall
     inside = comps["base"]["bounding_box_max"][2] - 3.0  # the space above the floor

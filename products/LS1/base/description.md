@@ -50,6 +50,7 @@ along z, not connected (hovering in the air).
 
 The LED stick on the lid is centred along the box's side.
 
-On the lid, a 5 mm IR LED sits at each end of the LED stick and a 5 mm
-phototransistor (Micro Robotics BP0334) above the middle of the stick,
+On the lid, a 5 mm phototransistor (Micro Robotics BP0334) sits above the
+middle of the LED stick, and a 5 mm IR LED above each of the stick's last
+LEDs, centred on it and tilted 10 degrees away from the phototransistor,
 each through a hole in the lid's side.

@@ -86,14 +86,16 @@ Assumptions where the description is silent:
   a block 7 mm long (shorter than the bodies, so the leads are free) with a
   bore 0.1 mm round each body and 1.2 mm walls under, round and between
   them; the bodies push in;
-- R6 (inline, its leads cut to 3 mm) stands up (along z) 0.3 mm past the
-  LED stick's -x end, at its board's mid-plane, in the stick's pocket in
-  the lid, on the data wire into the stick's DIN pad at that end;
-- a 5 mm IR LED at each end of the stick, level with it, and the 5 mm
-  phototransistor (Micro Robotics BP0334) above the stick's middle, each
-  with its flange against the inside of the lid's +y skirt, 0.3 mm clear
-  of the stick's pocket, its dome out through a hole (4.6 mm proud), its
-  leads to be bent and wired at the flange; R2 (inline) stands up along z between the
+- R6 (inline, its leads cut to 3 mm) is in line with the LED stick, 0.5 mm
+  past its -x end, at its board's mid-plane, in the stick's pocket in the
+  lid, on the data wire into the stick's DIN pad at that end;
+- the 5 mm phototransistor (Micro Robotics BP0334) sits above the stick's
+  middle, its flange 0.3 mm clear of the stick's pocket, and a 5 mm IR LED
+  above each of the stick's end LEDs, centred on it, at the same height,
+  turned 10 degrees about z away from the phototransistor; each has its
+  flange against the inside of the lid's +y skirt (only the outer rim of
+  an IR LED's tilted flange touches), its dome out through a hole (about
+  4.6 mm proud), its leads to be bent and wired at the flange; R2 (inline) stands up along z between the
   button's two rows of legs, centred on its axis and halfway along the
   legs, touching nothing (its wires are not modelled);
 - the USB-C breakout's underside is 2 mm above the floor; its front 2.6 mm
@@ -157,6 +159,7 @@ mt_holder_gap = 0.5  # the MT3608's parts, clear of the holder's side
 post_mt_gap = 0.3  # the Pico's +x posts' backs, clear of the MT3608's board
 pico_res_pins = (2, 3, 4, 5)  # GP1, GND, GP2, GP3: a resistor standing -y out of each
 lens_gap = 0.3  # each LED's and the phototransistor's flange, clear of the stick's pocket
+ir_tilt = 10.0  # degrees: each IR LED turned away from the phototransistor
 lens_clearance = 0.1  # radial, round each one's body in its hole in the lid
 clamp_lip_t = 1.2  # the USB clamp's lip behind the receptacle, along x
 clamp_lip_gap = 0.2  # between the lip and the receptacle's back
@@ -422,32 +425,38 @@ lid_screw_head = head_out(lid_hole, board_screw)  # the countersink's depth for 
 button_y = b / 2 - button_in - button.body / 2
 button_hole = button.cap_d + 2 * button_clearance
 
-# R6 inline at the LED stick's -x end, standing up (along z), in the stick's
-# pocket; R2 standing up between the button's two rows of legs, clear of
-# them and of its body
-r6_x = stick_x - stick.length / 2 - 0.3 - inline.body_d / 2
+# R6 inline at the LED stick's -x end, along x, in the stick's pocket; R2
+# standing up between the button's two rows of legs, clear of them and of
+# its body
+r6_x = stick_x - stick.length / 2 - 0.5 - inline.length / 2
 r6_y = stick_y + stick.pcb_t / 2  # the stick's board, mid-plane
 r6_z = stick_z
 # the stick's pocket in the lid (the lid cuts it): two rectangles, (x0, x1,
-# z0, z1), the stick's and R6's beside its -x end
+# z0, z1), the stick's and R6's past its -x end
 stick_pocket_clearance = 0.2  # round the stick and R6, in their pocket in the lid
 c_ = stick_pocket_clearance
 stick_pocket = [
     (stick_x - stick.length / 2 - c_, stick_x + stick.length / 2 + c_,
      stick_z - stick.width / 2 - c_, stick_z + stick.width / 2 + c_),
-    (r6_x - inline.body_d / 2 - c_, stick_x - stick.length / 2,
-     r6_z - inline.length / 2 - c_, r6_z + inline.length / 2 + c_),
+    (r6_x - inline.length / 2 - c_, stick_x - stick.length / 2,
+     r6_z - inline.body_d / 2 - c_, r6_z + inline.body_d / 2 + c_),
 ]
-# an IR LED at each end of the stick, level with it, and the phototransistor
-# above its middle, each through a hole in the lid's +y skirt, its flange
-# against the skirt's inside and its dome out
-ir_x = max(max(-r[0], r[1]) for r in stick_pocket) + lens_gap + ir_led.flange_d / 2  # each, either side of x = 0
-ir_z = stick_z
+# the phototransistor above the stick's middle, and an IR LED above each of
+# the stick's end LEDs at the same height, each through a hole in the lid's
+# +y skirt, its flange against the skirt's inside and its dome out; the IR
+# LEDs are turned ir_tilt about z, away from the phototransistor
 photo_x = stick_x
 photo_z = stick_pocket[0][3] + lens_gap + photo.flange_d / 2
-lens_y = b / 2 - ir_led.flange_t  # each one's own z = 0 (its flange's underside), turned to +y
+lens_y = b / 2 - ir_led.flange_t  # the phototransistor's own z = 0 (its flange's underside), turned to +y
+ir_xs = [stick_x + stick.led_xs[0], stick_x + stick.led_xs[-1]]
+ir_z = photo_z
+ir_angles = [ir_tilt if x < photo_x else -ir_tilt for x in ir_xs]  # about z: + turns the dome (+y) toward -x
+# each IR LED's flange top (its centre) sits so its rim just reaches the skirt
+ir_face_y = b / 2 - ir_led.flange_d / 2 * math.sin(math.radians(ir_tilt))
+assert abs(ir_xs[0] - photo_x) > (ir_led.flange_d + photo.flange_d) / 2 + lens_gap, \
+    "an IR LED runs into the phototransistor"
 assert photo_z + photo.flange_d / 2 < h, "the phototransistor reaches the lid's plate"
-assert lens_y - ir_led.lead > b / 2 - pico_top_in, "the LEDs' leads reach the Pico"
+assert lens_y - ir_led.lead > b / 2 - pico_top_in, "the phototransistor's leads reach the Pico"
 r2_x = button_x - button.leg_length / 2
 r2_y = button_y
 r2_z = button_z
