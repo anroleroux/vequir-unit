@@ -70,7 +70,6 @@ def test_the_ls1_assembly_places_everything_without_interference(tmp_path):
                      "usb_c_breakout", "tsd_1166_button", "ws2812_stick_8", "pico_2w",
                      "tp4056_charger", "wiring_board", "usb_clamp", "board_clamp", "board_clamp_screw",
                      "lid", "ir_led_1", "ir_led_2", "phototransistor"} | {f"pico_screw_{n}" for n in range(1, 5)} \
-        | {f"r_pico_pin{n}" for n in (2, 3, 4, 5)} \
         | {f"clamp_screw_{n}" for n in range(1, 3)} | {f"lid_screw_{n}" for n in range(1, 5)} \
         | {"d1_1n5822", "d2_1n5822", "d3_1n5822", "r2_inline", "r6_inline"}
     touching = {(c["a"].split("/")[-1], c["b"].split("/")[-1]) for c in summary["contacts"]}
