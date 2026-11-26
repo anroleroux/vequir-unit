@@ -1,6 +1,6 @@
 {
  "title": "Wiring",
- "note": "One USB-C port for charging and data: VBUS charges the cell through the TP4056, and D+ and D- go to the Pico's USB test pads. Two 1N5822 diodes share the load: the MT3608 runs from whichever of VBUS and the cell is higher, so with USB in the cell only charges. A third 1N5822 joins the MT3608 (set to about 5.2 V) to the Pico's VSYS, so nothing can push power back into a computer. The phototransistor Q2 reads light on GP27 (ADC1) with three ranges switched in on GP2 to GP4 (1k, 10k, 100k) and 1M always in, and the IR LEDs D4 and D5 each run from a GPIO (GP10, GP11) through 220R; the range resistors stand on the Pico's pins and the IR LEDs' resistors are wired in. The 10-pin header J2 brings out the TP4056's output, ADC2 and seven free GPIOs. The buzzer, the DS18B20, Q1, C1, R1 and R3 to R5 sit on the wiring board, with a 10-pin box header at its edge (its wiring not yet drawn); D1, D2 and D3 lie in the diode pillar behind the TP4056, leads straight, wired in; R6 is soldered inline at the LED stick and R2 sits between the button's legs.",
+ "note": "One USB-C port for charging and data: VBUS charges the cell through the TP4056, and D+ and D- go to the Pico's USB test pads. Two 1N5822 diodes share the load: the MT3608 runs from whichever of VBUS and the cell is higher, so with USB in the cell only charges. A third 1N5822 joins the MT3608 (set to about 5.2 V) to the Pico's VSYS, so nothing can push power back into a computer. The phototransistor Q2 reads light on GP27 (ADC1) with three ranges switched in on GP2 to GP4 (1k, 10k, 100k) and 1M always in, and the IR LEDs D4 and D5 each run from a GPIO (GP8, GP9) through 220R; the range resistors stand on the Pico's pins and the IR LEDs' resistors are wired in. The 10-pin header J2 brings out the TP4056's output, ADC2 (GP28) and the free GPIOs GP10 to GP16. The buzzer, the DS18B20, Q1, C1, R1 and R3 to R5 sit on the wiring board, with a 10-pin box header at its edge (its wiring not yet drawn); D1, D2 and D3 lie in the diode pillar behind the TP4056, leads straight, wired in; R6 is soldered inline at the LED stick and R2 sits between the button's legs.",
  "groups": [
   {
    "label": "Load sharing (diode OR)",
@@ -173,8 +173,8 @@
      "D-:TP2",
      "GP26:31",
      "GP28:34",
-     "GP0:1",
-     "GP1:2",
+     "GP10:14",
+     "GP11:15",
      "GP12:16",
      "GP13:17",
      "GP14:19",
@@ -183,14 +183,14 @@
     ],
     "right": [
      "GP7:10",
-     "GP8:11",
-     "GP9:12",
+     "GP0:1",
+     "GP1:2",
      "GP27:32",
      "GP2:4",
      "GP3:5",
      "GP4:6",
-     "GP10:14",
-     "GP11:15",
+     "GP8:11",
+     "GP9:12",
      "GP5:7",
      "GP6:9"
     ]
@@ -499,7 +499,7 @@
     ]
    },
    "modelled": false,
-   "note": "Limits IR LED D4 to about 9 mA from GP10 (3.3 V less its 1.3 V drop), under the pin's 12 mA."
+   "note": "Limits IR LED D4 to about 9 mA from GP8 (3.3 V less its 1.3 V drop), under the pin's 12 mA."
   },
   {
    "ref": "D4",
@@ -516,7 +516,7 @@
      "K"
     ]
    },
-   "note": "The IR LED above the LED stick's -x end LED, turned 10 degrees outward; GP10 high turns it on."
+   "note": "The IR LED above the LED stick's -x end LED, turned 10 degrees outward; GP8 high turns it on."
   },
   {
    "ref": "R12",
@@ -534,7 +534,7 @@
     ]
    },
    "modelled": false,
-   "note": "Limits IR LED D5 to about 9 mA from GP11 (3.3 V less its 1.3 V drop), under the pin's 12 mA."
+   "note": "Limits IR LED D5 to about 9 mA from GP9 (3.3 V less its 1.3 V drop), under the pin's 12 mA."
   },
   {
    "ref": "D5",
@@ -551,7 +551,7 @@
      "K"
     ]
    },
-   "note": "The IR LED above the LED stick's +x end LED, turned 10 degrees outward; GP11 high turns it on."
+   "note": "The IR LED above the LED stick's +x end LED, turned 10 degrees outward; GP9 high turns it on."
   },
   {
    "ref": "J2",
@@ -564,8 +564,8 @@
      "BAT:1",
      "GND:2",
      "ADC2:3",
-     "GP0:4",
-     "GP1:5",
+     "GP10:4",
+     "GP11:5",
      "GP12:6",
      "GP13:7",
      "GP14:8",
@@ -573,7 +573,7 @@
      "GP16:10"
     ]
    },
-   "note": "The 2 x 5 box header on the wiring board, opening through the lid's -y side for a ribbon cable: the TP4056's protected output (the cell, up to 4.2 V, and its ground), ADC2 (GP28, 3.3 V at most), and the Pico's free GPIOs GP0, GP1 and GP12 to GP16. Pin 1 is BAT."
+   "note": "The 2 x 5 box header on the wiring board, opening through the lid's -y side for a ribbon cable: the TP4056's protected output (the cell, up to 4.2 V, and its ground), ADC2 (GP28, 3.3 V at most), and the Pico's free GPIOs GP10 to GP16. Pin 1 is BAT."
   }
  ],
  "nets": [
@@ -728,7 +728,7 @@
    "name": "BUTTON",
    "kind": "signal",
    "pins": [
-    "U1.GP8",
+    "U1.GP0",
     "SW1.S1"
    ],
    "note": "Low when pressed (internal pull-up)."
@@ -737,7 +737,7 @@
    "name": "RING",
    "kind": "signal",
    "pins": [
-    "U1.GP9",
+    "U1.GP1",
     "R2.1"
    ],
    "note": "The button's LED ring: high is on, PWM to dim."
@@ -839,7 +839,7 @@
    "name": "IR1",
    "kind": "signal",
    "pins": [
-    "U1.GP10",
+    "U1.GP8",
     "R11.1"
    ],
    "note": "Drives IR LED D4 (the -x one) through R11."
@@ -856,7 +856,7 @@
    "name": "IR2",
    "kind": "signal",
    "pins": [
-    "U1.GP11",
+    "U1.GP9",
     "R12.1"
    ],
    "note": "Drives IR LED D5 (the +x one) through R12."
@@ -879,19 +879,19 @@
    "note": "Analogue in on the header: keep it within 0 to 3.3 V."
   },
   {
-   "name": "EXT_GP0",
+   "name": "EXT_GP10",
    "kind": "signal",
    "pins": [
-    "U1.GP0",
-    "J2.GP0"
+    "U1.GP10",
+    "J2.GP10"
    ]
   },
   {
-   "name": "EXT_GP1",
+   "name": "EXT_GP11",
    "kind": "signal",
    "pins": [
-    "U1.GP1",
-    "J2.GP1"
+    "U1.GP11",
+    "J2.GP11"
    ]
   },
   {
