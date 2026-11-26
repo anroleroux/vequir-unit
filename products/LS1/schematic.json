@@ -1,6 +1,6 @@
 {
  "title": "Wiring",
- "note": "One USB-C port for charging and data: VBUS charges the cell through the TP4056, and D+ and D- go to the Pico's USB test pads. Two 1N5822 diodes share the load: the MT3608 runs from whichever of VBUS and the cell is higher, so with USB in the cell only charges. A third 1N5822 joins the MT3608 (set to about 5.2 V) to the Pico's VSYS, so nothing can push power back into a computer. The buzzer, the DS18B20, Q1, C1, R1 and R3 to R5 sit on the wiring board; D1 is soldered onto the MT3608, D2 and D3 lie on the floor, and R2 and R6 are soldered inline at the button and the LED stick.",
+ "note": "One USB-C port for charging and data: VBUS charges the cell through the TP4056, and D+ and D- go to the Pico's USB test pads. Two 1N5822 diodes share the load: the MT3608 runs from whichever of VBUS and the cell is higher, so with USB in the cell only charges. A third 1N5822 joins the MT3608 (set to about 5.2 V) to the Pico's VSYS, so nothing can push power back into a computer. The phototransistor Q2 reads light on GP27 (ADC1) with three ranges switched in on GP2 to GP4 (1k, 10k, 100k) and 1M always in, and the IR LEDs D4 and D5 each run from a GPIO (GP8, GP9) through 220R; the range resistors stand on the Pico's pins and the IR LEDs' resistors are wired in. The 10-pin header J2 brings out the TP4056's output, ADC2 (GP28) and the free GPIOs GP10 to GP16. The buzzer, the DS18B20, Q1, C1, R1 and R3 to R5 sit on the wiring board, with a 10-pin box header at its edge (its wiring not yet drawn); D1, D2 and D3 lie in the diode pillar behind the TP4056, leads straight, wired in; R6 is soldered inline at the LED stick and R2 sits between the button's legs.",
  "groups": [
   {
    "label": "Load sharing (diode OR)",
@@ -70,7 +70,7 @@
   {
    "ref": "BT1",
    "name": "18650",
-   "item": "battery_holders/single_18650_holder",
+   "item": "power/holder_18650_1s",
    "x": 50,
    "y": 12,
    "w": 12,
@@ -83,7 +83,7 @@
      "-"
     ]
    },
-   "note": "One 18650 cell in its holder, glued to the floor, the BMS strip on top."
+   "note": "One 18650 cell in a bought single-cell holder with wire leads, glued to the floor, the BMS strip on top."
   },
   {
    "ref": "D3",
@@ -101,7 +101,7 @@
      "K"
     ]
    },
-   "note": "The cell's side of the diode OR, the lower one in the diode holder behind the TP4056, leads bent down, wired in."
+   "note": "The cell's side of the diode OR, the lowest in the diode pillar behind the TP4056, leads straight, wired in."
   },
   {
    "ref": "D2",
@@ -119,7 +119,7 @@
      "K"
     ]
    },
-   "note": "USB's side of the diode OR, the upper one in the diode holder behind the TP4056, leads bent up, wired in."
+   "note": "USB's side of the diode OR, the middle one in the diode pillar behind the TP4056, leads straight, wired in."
   },
   {
    "ref": "U4",
@@ -155,7 +155,7 @@
      "K"
     ]
    },
-   "note": "Joins the MT3608 to VSYS, soldered by its anode lead into the MT3608's VOUT+ hole (open it to 1.4 mm); the VSYS wire goes on its cathode lead. The Pico's own diode joins VBUS to VSYS, so whichever is higher runs it, and nothing flows back into the USB port."
+   "note": "Joins the MT3608 to VSYS: the top one in the diode pillar behind the TP4056, leads straight, wired from the MT3608's VOUT+ to the Pico's VSYS. The Pico's own diode joins VBUS to VSYS, so whichever is higher runs it, and nothing flows back into the USB port."
   },
   {
    "ref": "U1",
@@ -171,12 +171,26 @@
      "3V3:36",
      "D+:TP3",
      "D-:TP2",
-     "GP26:31"
+     "GP26:31",
+     "GP28:34",
+     "GP10:14",
+     "GP11:15",
+     "GP12:16",
+     "GP13:17",
+     "GP14:19",
+     "GP15:20",
+     "GP16:21"
     ],
     "right": [
+     "GP7:10",
+     "GP0:1",
+     "GP1:2",
+     "GP27:32",
      "GP2:4",
      "GP3:5",
      "GP4:6",
+     "GP8:11",
+     "GP9:12",
      "GP5:7",
      "GP6:9"
     ]
@@ -214,7 +228,7 @@
      "2"
     ]
    },
-   "note": "Limits the button's LED to a few mA from the 3.3 V GPIO; soldered inline on the button's LED+ leg. Check against the LED's rating."
+   "note": "Limits the button's LED to a few mA from the 3.3 V GPIO; it sits between the button's legs, to be wired to the LED+ leg. Check against the LED's rating."
   },
   {
    "ref": "SW1",
@@ -237,7 +251,7 @@
    "name": "1k",
    "item": "electronics/resistor_025w",
    "x": 46,
-   "y": 70,
+   "y": 84,
    "w": 10,
    "symbol": "resistor",
    "pins": {
@@ -255,7 +269,7 @@
    "name": "BC337",
    "item": "electronics/npn_bc337",
    "x": 64,
-   "y": 68,
+   "y": 82,
    "symbol": "npn",
    "pins": {
     "left": [
@@ -273,7 +287,7 @@
    "name": "Buzzer 5V",
    "item": "electronics/buzzer_12x9",
    "x": 82,
-   "y": 70,
+   "y": 84,
    "pins": {
     "left": [
      "+",
@@ -287,7 +301,7 @@
    "name": "DS18B20",
    "item": "electronics/ds18b20",
    "x": 12,
-   "y": 64,
+   "y": 90,
    "pins": {
     "right": [
      "VDD",
@@ -302,7 +316,7 @@
    "name": "4k7",
    "item": "electronics/resistor_025w",
    "x": 12,
-   "y": 76,
+   "y": 102,
    "w": 10,
    "symbol": "resistor",
    "pins": {
@@ -386,6 +400,180 @@
     ]
    },
    "note": "In the LED stick's data line: damps ringing on the wire and protects the first LED's input; soldered inline at the stick's DIN pad."
+  },
+  {
+   "ref": "Q2",
+   "name": "BP0334",
+   "item": "electronics/phototransistor_5mm",
+   "x": 120,
+   "y": 58,
+   "pins": {
+    "left": [
+     "C",
+     "E"
+    ]
+   },
+   "note": "The 5 mm phototransistor above the LED stick's middle, looking out through the lid. Its emitter current flows through whichever range resistors are switched to ground, so the voltage on the sense node (GP27, ADC1) rises with the light."
+  },
+  {
+   "ref": "R7",
+   "name": "1k",
+   "item": "electronics/resistor_025w_inline",
+   "x": 100,
+   "y": 62,
+   "symbol": "resistor",
+   "pins": {
+    "left": [
+     "2"
+    ],
+    "right": [
+     "1"
+    ]
+   },
+   "note": "Bright sun: switch it in by driving GP2 low (else leave GP2 an input, high-impedance). It stands straight out of the Pico's back from GP2, pin 4; its free end is wired to the sense node."
+  },
+  {
+   "ref": "R8",
+   "name": "10k",
+   "item": "electronics/resistor_025w_inline",
+   "x": 100,
+   "y": 68,
+   "symbol": "resistor",
+   "pins": {
+    "left": [
+     "2"
+    ],
+    "right": [
+     "1"
+    ]
+   },
+   "note": "Indoor light: switch it in by driving GP3 low. It stands straight out of the Pico's back from GP3, pin 5; its free end is wired to the sense node."
+  },
+  {
+   "ref": "R9",
+   "name": "100k",
+   "item": "electronics/resistor_025w_inline",
+   "x": 100,
+   "y": 74,
+   "symbol": "resistor",
+   "pins": {
+    "left": [
+     "2"
+    ],
+    "right": [
+     "1"
+    ]
+   },
+   "note": "Reflections: switch it in by driving GP4 low. It stands straight out of the Pico's back from GP4, pin 6; its free end is wired to the sense node."
+  },
+  {
+   "ref": "R10",
+   "name": "1M",
+   "item": "electronics/resistor_025w_inline",
+   "x": 100,
+   "y": 80,
+   "symbol": "resistor",
+   "pins": {
+    "left": [
+     "2"
+    ],
+    "right": [
+     "1"
+    ]
+   },
+   "note": "Always in, to ground: the range for the dark, and it keeps the sense node from floating. It stands straight out of the Pico's back from a GND pin, pin 3; its free end is wired to the sense node."
+  },
+  {
+   "ref": "R11",
+   "name": "220R",
+   "item": "electronics/resistor_025w",
+   "x": 100,
+   "y": 90,
+   "symbol": "resistor",
+   "pins": {
+    "left": [
+     "1"
+    ],
+    "right": [
+     "2"
+    ]
+   },
+   "modelled": false,
+   "note": "Limits IR LED D4 to about 9 mA from GP8 (3.3 V less its 1.3 V drop), under the pin's 12 mA."
+  },
+  {
+   "ref": "D4",
+   "name": "IR LED",
+   "item": "electronics/led_ir_5mm",
+   "x": 118,
+   "y": 90,
+   "symbol": "diode",
+   "pins": {
+    "left": [
+     "A"
+    ],
+    "right": [
+     "K"
+    ]
+   },
+   "note": "The IR LED above the LED stick's -x end LED, turned 10 degrees outward; GP8 high turns it on."
+  },
+  {
+   "ref": "R12",
+   "name": "220R",
+   "item": "electronics/resistor_025w",
+   "x": 100,
+   "y": 96,
+   "symbol": "resistor",
+   "pins": {
+    "left": [
+     "1"
+    ],
+    "right": [
+     "2"
+    ]
+   },
+   "modelled": false,
+   "note": "Limits IR LED D5 to about 9 mA from GP9 (3.3 V less its 1.3 V drop), under the pin's 12 mA."
+  },
+  {
+   "ref": "D5",
+   "name": "IR LED",
+   "item": "electronics/led_ir_5mm",
+   "x": 118,
+   "y": 96,
+   "symbol": "diode",
+   "pins": {
+    "left": [
+     "A"
+    ],
+    "right": [
+     "K"
+    ]
+   },
+   "note": "The IR LED above the LED stick's +x end LED, turned 10 degrees outward; GP9 high turns it on."
+  },
+  {
+   "ref": "J2",
+   "name": "10-pin header",
+   "item": "electronics/box_header_2x5",
+   "x": 18,
+   "y": 56,
+   "pins": {
+    "right": [
+     "BAT:1",
+     "GND:2",
+     "ADC2:3",
+     "GP10:4",
+     "GP11:5",
+     "GP12:6",
+     "GP13:7",
+     "GP14:8",
+     "GP15:9",
+     "GP16:10"
+    ]
+   },
+   "note": "The 2 x 5 box header on the wiring board, opening through the lid's -y side for a ribbon cable: the TP4056's protected output (the cell, up to 4.2 V, and its ground), ADC2 (GP28, 3.3 V at most), and the Pico's free GPIOs GP10 to GP16. Pin 1 is BAT."
   }
  ],
  "nets": [
@@ -416,7 +604,11 @@
     "Q1.E",
     "U5.GND",
     "R5.2",
-    "C1.2"
+    "C1.2",
+    "R10.2",
+    "D4.K",
+    "D5.K",
+    "J2.GND"
    ],
    "note": "The protected side of the TP4056 (IN- and OUT-, joined on its board). Never join it to B- or the cell's negative."
   },
@@ -452,7 +644,8 @@
    "pins": [
     "U2.OUT+",
     "D3.A",
-    "R4.1"
+    "R4.1",
+    "J2.BAT"
    ],
    "note": "The protected cell, 3.0 to 4.2 V."
   },
@@ -492,7 +685,8 @@
    "pins": [
     "U1.3V3",
     "U5.VDD",
-    "R1.1"
+    "R1.1",
+    "Q2.C"
    ],
    "note": "The Pico's regulator out."
   },
@@ -517,7 +711,7 @@
    "name": "LED_DIN",
    "kind": "data",
    "pins": [
-    "U1.GP2",
+    "U1.GP7",
     "R6.1"
    ]
   },
@@ -534,7 +728,7 @@
    "name": "BUTTON",
    "kind": "signal",
    "pins": [
-    "U1.GP3",
+    "U1.GP0",
     "SW1.S1"
    ],
    "note": "Low when pressed (internal pull-up)."
@@ -543,7 +737,7 @@
    "name": "RING",
    "kind": "signal",
    "pins": [
-    "U1.GP4",
+    "U1.GP1",
     "R2.1"
    ],
    "note": "The button's LED ring: high is on, PWM to dim."
@@ -600,6 +794,145 @@
     "U1.GP26"
    ],
    "note": "Half the cell's voltage, on GP26 (ADC0). With USB in it reads the charging voltage, so judge the charge state with USB out (or the TP4056 idle)."
+  },
+  {
+   "name": "LIGHT",
+   "kind": "signal",
+   "pins": [
+    "Q2.E",
+    "R7.1",
+    "R8.1",
+    "R9.1",
+    "R10.1",
+    "U1.GP27"
+   ],
+   "note": "The light sensor's sense node, read on GP27 (ADC1): the phototransistor's current times the resistance switched to ground."
+  },
+  {
+   "name": "LIGHT_1K",
+   "kind": "signal",
+   "pins": [
+    "U1.GP2",
+    "R7.2"
+   ],
+   "note": "Driven low to switch the 1k range in; an input (high-impedance) to switch it out."
+  },
+  {
+   "name": "LIGHT_10K",
+   "kind": "signal",
+   "pins": [
+    "U1.GP3",
+    "R8.2"
+   ],
+   "note": "Driven low to switch the 10k range in."
+  },
+  {
+   "name": "LIGHT_100K",
+   "kind": "signal",
+   "pins": [
+    "U1.GP4",
+    "R9.2"
+   ],
+   "note": "Driven low to switch the 100k range in."
+  },
+  {
+   "name": "IR1",
+   "kind": "signal",
+   "pins": [
+    "U1.GP8",
+    "R11.1"
+   ],
+   "note": "Drives IR LED D4 (the -x one) through R11."
+  },
+  {
+   "name": "IR1_A",
+   "kind": "signal",
+   "pins": [
+    "R11.2",
+    "D4.A"
+   ]
+  },
+  {
+   "name": "IR2",
+   "kind": "signal",
+   "pins": [
+    "U1.GP9",
+    "R12.1"
+   ],
+   "note": "Drives IR LED D5 (the +x one) through R12."
+  },
+  {
+   "name": "IR2_A",
+   "kind": "signal",
+   "pins": [
+    "R12.2",
+    "D5.A"
+   ]
+  },
+  {
+   "name": "EXT_ADC2",
+   "kind": "signal",
+   "pins": [
+    "U1.GP28",
+    "J2.ADC2"
+   ],
+   "note": "Analogue in on the header: keep it within 0 to 3.3 V."
+  },
+  {
+   "name": "EXT_GP10",
+   "kind": "signal",
+   "pins": [
+    "U1.GP10",
+    "J2.GP10"
+   ]
+  },
+  {
+   "name": "EXT_GP11",
+   "kind": "signal",
+   "pins": [
+    "U1.GP11",
+    "J2.GP11"
+   ]
+  },
+  {
+   "name": "EXT_GP12",
+   "kind": "signal",
+   "pins": [
+    "U1.GP12",
+    "J2.GP12"
+   ]
+  },
+  {
+   "name": "EXT_GP13",
+   "kind": "signal",
+   "pins": [
+    "U1.GP13",
+    "J2.GP13"
+   ]
+  },
+  {
+   "name": "EXT_GP14",
+   "kind": "signal",
+   "pins": [
+    "U1.GP14",
+    "J2.GP14"
+   ]
+  },
+  {
+   "name": "EXT_GP15",
+   "kind": "signal",
+   "pins": [
+    "U1.GP15",
+    "J2.GP15"
+   ]
+  },
+  {
+   "name": "EXT_GP16",
+   "kind": "signal",
+   "pins": [
+    "U1.GP16",
+    "J2.GP16"
+   ]
   }
  ]
 }

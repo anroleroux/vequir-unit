@@ -1,7 +1,9 @@
-A piece of perfboard (stripless, 0.1 in grid) cut as small as its parts
-allow, 12 by 9 holes, for the LS1's small parts: the buzzer at one front
-corner, the DS18B20 and the BC337 transistor along the front edge beside it,
-three resistors in a column behind those, and a resistor and the battery
-divider's capacitor behind the buzzer. The holes for the buzzer's pins are
-drilled out, and the four corner holes are drilled out for M1.2 screws that
-fix the board to pillars in the base.
+A piece of perfboard (stripless, 0.1 in grid) cut to 12 by 9 holes for the
+LS1's small parts, packed into the columns toward the box's +y side: the
+buzzer at the front, the DS18B20 and the BC337 transistor beside it, three
+resistors in rows under the buzzer, a fourth resistor standing along the
+rows, and the battery divider's capacitor. The buzzer's pin holes are
+drilled out. A 10-pin (2 x 5) right-angle box header takes the last two
+columns at the -y side, its opening past the board's edge. The board's
+back edge stands in a slot in the base and its front edge is held by a
+clamp, so it has no screw holes.
